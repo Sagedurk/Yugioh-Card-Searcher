@@ -1,0 +1,62 @@
+NOTE:	These things aren't necessarily planned to be done in this particular order.
+	The reason they are numbered are to see how many things are left to do.
+
+
+													DONE	#1	Save data when swapping to another scene from [Card Search]
+																		DONE	dropdown values (which parameters are we using and what value do they have?)
+																		DONE	color background of selected index in left dropdown menu if the selected index in the right dropdown menu is not default (DropdownHandler:226) 
+																		DONE	Instantiate all objects again.
+																		DONE	Make sure the save/load file for [Card Search] works correctly (CardInfo:374)
+
+													DONE? 	#6	Properly scale the dropdown UI in Aspect Ratios that aren't 19.5:9 (& resolutions that aren't 1080p)
+													DONE? -	#9	Finish implementing ScaleHandler.CanvasMargin() (to all 4 scenes´?) (ScaleHandler:189)
+													DONE	#3	Save each card in [Card Search] by re-parsing to Json.
+													DONE	#8  Make it possible to get a card through ID?
+													DONE	#2	Replace WWW with UnityWebRequest
+													DONE	#1	Update cached files 
+																	Minimum API requests: Send a request to get all cards. For each card, check its name,
+																	if file exist, replace data with new Json encrypted card info.
+
+
+
+
+
+
+REPORT TO YGOPRODECK ADMIN!: Draitron Eclipse doesn't have any card_set information, randomcard endpoint doesn't return an id for card image
+Windwitch - Diamond Bell have no card_set info. Trackblack, Grain Corn Token, The Melting Red Shadow, Soul Token, Dark Soul Token, Armed Dragon Blitz, "Rainbow Dragon, the Zenith Crystal Beast".
+Dwell Chair Gear has the name "Dwell Chair Gear\r\n" in the database, messing up filesaving.
+
+
+Why does the info from the randomcard endpoint differ from the cardinfo endpoint??
+
+What does the card_sets.set_price go after? TCGplayer? Is it a cached number? If it is, how outdated is it?
+Is the lowest price cached? If it is, how outdated is it?
+
+
+
+
+
+
+
+IMPLEMENT THE FULL API PING!!!!!! (if for nothing else, to be able to properly save all card data)
+Add misc??
+
+
+
+ARTWORK BUTTONS DOESN'T GET SET TO ACTIVE, AND THUS DOESN'T SHOW BUTTONS!!!!!!!
+
+
+COLOR CODING IN PARAMETER STOPPED WORKING!!!!!!!!! FIX!!!!
+
+
+									
+
+		major	v
+		#2	More complex ScaleHandler.ScaleUIChild() & less complex ScaleHandler.ScaleUIDropdown()?? (ScaleHandler:117)
+
+major	v
+#2/3  CLEAN UP THE CODE!
+
+	Version 1.0 done!
+
+#3/4  Update to v7 of the API (or the latest version if a new version have released)
