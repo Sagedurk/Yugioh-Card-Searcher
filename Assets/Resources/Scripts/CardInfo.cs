@@ -14,7 +14,7 @@ using UnityEditor.PackageManager.Requests;
 //Handles card information and API requests
 public class CardInfo : MonoBehaviour
 {   
-    public const string URL = "db.ygoprodeck.com/api/v6/", cInfo = "cardinfo.php?";
+    public const string URL = "db.ygoprodeck.com/api/", databaseVersion = "v7/", cInfo = "cardinfo.php?";
     public string _URLMod, cardID, jsonSaveData, fileName, nameMod;
     //Currently using UnityEngine.WWW cause it's easy to understand how to use
     //Change to UnityWebRequest in the near future
@@ -91,7 +91,7 @@ public class CardInfo : MonoBehaviour
                         else
                             nameMod = "name=";
                         Debug.Log(nameMod);
-                        webRequest = UnityWebRequest.Get(URL + cInfo + nameMod + cardID);          //Card Information
+                        webRequest = UnityWebRequest.Get(URL + databaseVersion + cInfo + nameMod + cardID);          //Card Information
                         StartCoroutine(APIrequest());
                     }
                 }
@@ -108,7 +108,7 @@ public class CardInfo : MonoBehaviour
                     else
                     {   if(!saveManager.CheckIfOnlySpaces(cardID) || !saveManager.CheckIfOnlySpaces(_URLMod))
                         {
-                        webRequest = UnityWebRequest.Get(URL + cInfo + "fname=" + cardID + _URLMod);         //General Search
+                        webRequest = UnityWebRequest.Get(URL + databaseVersion + cInfo + "fname=" + cardID + _URLMod);         //General Search
                         StartCoroutine(APIrequest());
                         }
                         else
@@ -161,7 +161,7 @@ public class CardInfo : MonoBehaviour
                 {
                     if (!saveManager.CheckIfOnlySpaces(_URLMod))
                     {
-                        webRequest = UnityWebRequest.Get(URL + cInfo + "fname=" + cardID + _URLMod);
+                        webRequest = UnityWebRequest.Get(URL + databaseVersion + cInfo + "fname=" + cardID + _URLMod);
                         StartCoroutine(APIrequest());
                     }
                     else
@@ -175,7 +175,7 @@ public class CardInfo : MonoBehaviour
         if (EUS.sceneIndex == 3)
         {
             //CardID = null
-            webRequest = UnityWebRequest.Get(URL + "randomcard.php");                  //Randomcard
+            webRequest = UnityWebRequest.Get(URL + databaseVersion + "randomcard.php");                  //Randomcard
             StartCoroutine(APIrequest(false));
         }
         if (EUS.sceneIndex == 4)
@@ -191,7 +191,7 @@ public class CardInfo : MonoBehaviour
             {
                 //CardID = null
                 archetypeList.Clear();
-                webRequest = UnityWebRequest.Get(URL + "archetypes.php");                  //Archetype
+                webRequest = UnityWebRequest.Get(URL + databaseVersion + "archetypes.php");                  //Archetype
                 StartCoroutine(APIrequest());
             }
         }
@@ -334,19 +334,23 @@ public class CardInfo : MonoBehaviour
         {
             yield return req.downloadHandler.text;
            
-            json = "{ \"Items\":" + req.downloadHandler.text + "}";
+            json =  req.downloadHandler.text;
             if (EUS.sceneIndex == 3)
-                json = "{ \"Items\":[" + req.downloadHandler.text + "]}";
+                json = "{ \"data\":[" + req.downloadHandler.text + "]}";
             parseList = JsonHelper.FromJson<CardInfoParse>(json); 
+            Debug.Log("Fetched Data from API");
+            Debug.Log(parseList.Length);
            
         }
         else if (cachedData != "")
         {
             yield return cachedData;
-            json = "{ \"Items\":" + cachedData + "}";
+            json = cachedData;
             if (EUS.sceneIndex == 3)
-                json = "{ \"Items\":[" + cachedData + "]}";
+                json = "{ \"data\":[" + cachedData + "]}";
             parseList = JsonHelper.FromJson<CardInfoParse>(json);
+            Debug.Log("Fetched Data from local file");
+            Debug.Log(parseList.Length);
         }
         for (int i = 0; i < parseList.Length; i++)
         {           
@@ -645,7 +649,7 @@ public class CardInfo : MonoBehaviour
 
     public IEnumerator GetArchetypes()
     {
-        webRequest = UnityWebRequest.Get( URL + "archetypes.php");
+        webRequest = UnityWebRequest.Get(URL + databaseVersion + "archetypes.php");
         yield return StartCoroutine(ArchetypeRequest());
     }
 
