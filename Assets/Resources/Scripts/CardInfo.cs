@@ -360,8 +360,17 @@ public class CardInfo : MonoBehaviour
                 {
 
                     PrepToFileName(parseList[i].name);
-                    saveManager.WriteFile(fileName, req.downloadHandler.text);
-                    saveManager.WriteFile(parseList[i].id.ToString(), req.downloadHandler.text);
+                    if(EUS.sceneIndex == 1)
+                    {
+                        saveManager.WriteFile(fileName, req.downloadHandler.text);
+                        saveManager.WriteFile(parseList[i].id.ToString(), req.downloadHandler.text);
+                    }
+                    else if(EUS.sceneIndex == 3)
+                    {
+                    //TROUBLESHOOTING: randomcard endpoint returns wrong data
+                        //saveManager.WriteFile(fileName, "{ \"data\":[" + req.downloadHandler.text);
+                        //saveManager.WriteFile(parseList[i].id.ToString(), req.downloadHandler.text);
+                    }
                 }
 
                 if (image != null) { 
@@ -553,8 +562,10 @@ public class CardInfo : MonoBehaviour
                
                 jsonSaveData = JsonHelper.ToJson<CardInfoParse>(toJson);
                 Debug.Log(jsonSaveData);
-                jsonSaveData = jsonSaveData.Replace("{\"Items\":","");
-                jsonSaveData = jsonSaveData.Substring(0, jsonSaveData.Length - 1);
+
+            //TROUBLESHOOTING: Make sure the saved data is valid to be read later
+                //jsonSaveData = jsonSaveData.Replace("{\"Items\":","");
+                //jsonSaveData = jsonSaveData.Substring(0, jsonSaveData.Length - 1);
 
                 if (i == 0) //Only check once
                 {
