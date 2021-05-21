@@ -144,9 +144,12 @@ public class CardInfo : MonoBehaviour
         {
             if (EUS.sceneIndex == 1)
             {
+                /*
                 ClearCardInfo(true, id, cardName, cardType, monsterType, atk, def, level, attribute, pendulumScale, archetype, desc);
                 errorText.text = "No matching card was found.";
                 image.gameObject.GetComponent<Image>().color = new Color(0, 0, 0, 0);
+                 */
+
             }
             else if (EUS.sceneIndex == 2)
             {
@@ -180,7 +183,7 @@ public class CardInfo : MonoBehaviour
         }
         if (EUS.sceneIndex == 4)
         {
-            saveManager.WriteFile("scene4outside","yes");
+            //saveManager.WriteFile("scene4outside","yes");
             Debug.Log("Sen API request");
             if (System.IO.File.Exists(Application.persistentDataPath + "/archetypes.txt"))
             {
@@ -192,7 +195,7 @@ public class CardInfo : MonoBehaviour
                 //CardID = null
                 archetypeList.Clear();
                 webRequest = UnityWebRequest.Get(URL + databaseVersion + "archetypes.php");                  //Archetype
-                StartCoroutine(APIrequest());
+                StartCoroutine(ArchetypeRequest());
             }
         }
     }
@@ -208,6 +211,11 @@ public class CardInfo : MonoBehaviour
                 ResetPrefab();
                 ClearCardInfo(resetButtons, id, cardName, cardType, monsterType, atk, def, level, attribute, pendulumScale, archetype, desc);
                 errorText.text = "No matching card was found.";
+
+                image.color = Vector4.zero;
+                showCardSets.interactable = false;
+                showCardSets.gameObject.SetActive(false);
+                artworkButtons.SetActive(false);
             }
             else if (webRequest.downloadHandler.text.Contains("\"error\":"))
             {
@@ -317,7 +325,7 @@ public class CardInfo : MonoBehaviour
             }
         }
         
-        if(EUS.sceneIndex == 1 || EUS.sceneIndex == 3)
+        if(EUS.sceneIndex == 1)// || EUS.sceneIndex == 3)
             artworkButtons.SetActive(true);
     }
     public IEnumerator CardInfoPosition()
@@ -337,6 +345,7 @@ public class CardInfo : MonoBehaviour
             json =  req.downloadHandler.text;
             if (EUS.sceneIndex == 3)
                 json = "{ \"data\":[" + req.downloadHandler.text + "]}";
+           
             parseList = JsonHelper.FromJson<CardInfoParse>(json); 
             Debug.Log("Fetched Data from API");
             Debug.Log(parseList.Length);
@@ -421,6 +430,7 @@ public class CardInfo : MonoBehaviour
                     scrollContainer.sizeDelta = new Vector2(scaleHandler.canvas.sizeDelta.x, scaleHandler.canvas.sizeDelta.y + scrollContainer.anchoredPosition.y - scaleHandler.menu.sizeDelta.y);
 
                      printAmount.text = "Total amount of prints: " + parseList[i].card_sets.Length;
+                    showCardSets.gameObject.SetActive(true);
                      showCardSets.interactable = true;
                     RectTransform closeBtn = cardSetCloseBtn.GetComponent<RectTransform>();
                     closeBtn.sizeDelta = new Vector2(scaleHandler.menu.sizeDelta.y * 1.25f/2, scaleHandler.menu.sizeDelta.y * 1.25f/2);
@@ -639,17 +649,22 @@ public class CardInfo : MonoBehaviour
         if(req != null)
         {
             yield return req.downloadHandler.text;
-            json = "{ \"Items\":" + req.downloadHandler.text + "}";
+            json = "{ \"data\":" + req.downloadHandler.text + "}";
             parseArchList = JsonHelper.FromJson<ArchetypeParse>(json);
         }
         else if (cachedData != "")
         {
             yield return cachedData;
-            json = "{ \"Items\":" + cachedData + "}";
+            json = "{ \"data\":" + cachedData + "}";
             parseArchList = JsonHelper.FromJson<ArchetypeParse>(json);
         }
-        dropDownMenu.archetype.Clear();
-        dropDownMenu.archetype.Add(new Dropdown.OptionData(""));
+        
+        if(dropDownMenu != null)
+        {
+            dropDownMenu.archetype.Clear();
+            dropDownMenu.archetype.Add(new Dropdown.OptionData(""));
+        }
+
         for (int i = 0; i < parseArchList.Length; i++)
         {
             dropDownMenu.archetype.Add(new Dropdown.OptionData(parseArchList[i].archetype_name));
@@ -684,6 +699,7 @@ public class CardInfo : MonoBehaviour
 
     public IEnumerator LoadCardSetInfo(UnityWebRequest req = null, string cachedData = "")
     {
+
         string json;
         if (req != null) { 
             yield return req.downloadHandler.text;
@@ -696,7 +712,10 @@ public class CardInfo : MonoBehaviour
             json = "{ \"Items\":" + cachedData + "}";
             parseSetList = JsonHelper.FromJson<CardSetParse>(json);
         }
-        
+
+        if (parseSetList == null)
+            yield break;
+
         dropDownMenu.cardset.Clear();
         dropDownMenu.cardset.Add(new Dropdown.OptionData(""));
         for (int i = 0; i < parseSetList.Length; i++)
