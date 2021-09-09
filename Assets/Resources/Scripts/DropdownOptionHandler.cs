@@ -7,8 +7,16 @@ public class DropdownOptionHandler : MonoBehaviour
 {
     public DropdownHandler parameterHandler;
     public Color color;
+    public CardInfo cardInfo;
     private void Start()
     {
+        cardInfo = GameObject.FindObjectOfType<CardInfo>();
+        StartCoroutine(loadParameters());
+    }
+
+    private IEnumerator loadParameters()
+    {
+
         int parameterValue = parameterHandler.parameters.value;
         for (int i = 0; i < 20; i++)
         {
@@ -96,13 +104,14 @@ public class DropdownOptionHandler : MonoBehaviour
                     break;
                 case 16:
                     parameterHandler.DropdownParams(i);
-                    //yield return StartCoroutine(cardInfo.GetCardSet());
+                    yield return StartCoroutine(cardInfo.GetCardSet());
                     parameterHandler.parameterValues.value = PlayerPrefs.GetInt(parameterHandler.savemngr.paramIndex15);
-                    parameterHandler.DropdownParamValues(PlayerPrefs.GetInt(parameterHandler.savemngr.paramIndex15));
+                    //index out of range
+                    //parameterHandler.DropdownParamValues(PlayerPrefs.GetInt(parameterHandler.savemngr.paramIndex15));
                     break;
                 case 17:
-                    //parameterHandler.DropdownParams(i);
-                    //yield return StartCoroutine(cardInfo.GetArchetypes());
+                    parameterHandler.DropdownParams(i);
+                    yield return StartCoroutine(cardInfo.GetArchetypes());
                     parameterHandler.DropdownParams(i);
                     parameterHandler.parameterValues.value = PlayerPrefs.GetInt(parameterHandler.savemngr.paramIndex16);
                     parameterHandler.DropdownParamValues(PlayerPrefs.GetInt(parameterHandler.savemngr.paramIndex16));
@@ -127,4 +136,12 @@ public class DropdownOptionHandler : MonoBehaviour
         }
         parameterHandler.parameters.value = parameterValue;
     }
+
+
+
+
+
+
+
+
 }

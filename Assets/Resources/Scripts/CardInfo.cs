@@ -781,7 +781,7 @@ public class CardInfo : MonoBehaviour
 
     public void NextImage()
     {
-        Debug.Log(imageIndex + " : " + (parseList[0].card_images.Length-1));
+            Debug.Log(imageIndex + " : " + (parseList[0].card_images.Length-1));
         if (imageIndex < (parseList[0].card_images.Length - 1))
         {
             imageIndex++;

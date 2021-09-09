@@ -300,13 +300,13 @@ public class SaveManager : MonoBehaviour
                     yield return StartCoroutine(cardInfo.GetCardSet());
                     parameterDropdown.DropdownParams(i);
                     parameterDropdown.parameterValues.value = PlayerPrefs.GetInt(paramIndex15);
-                    parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex15));
+                    //parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex15));
                     break;
                 case 17:
                     yield return StartCoroutine(cardInfo.GetArchetypes());
                     parameterDropdown.DropdownParams(i);
                     parameterDropdown.parameterValues.value = PlayerPrefs.GetInt(paramIndex16);
-                    parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex16));
+                    //parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex16));
                     break;
                 case 18:
                     parameterDropdown.parameterValues.value = PlayerPrefs.GetInt(paramIndex17);
