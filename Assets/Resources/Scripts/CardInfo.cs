@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System;
 using Unity.Collections;
 using UnityEngine.Networking;
-using UnityEditor.PackageManager.Requests;
+//using UnityEditor.PackageManager.Requests;
 //using UnityEngine.UIElements;
 
 //Handles card information and API requests
@@ -542,7 +542,7 @@ public class CardInfo : MonoBehaviour
             
             else if (EUS.sceneIndex == 2)
             {
-                //Instantiate the search results
+                Debug.Log("iteration #" + (i+1));
                 prefab = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Search Result"), GameObject.FindGameObjectWithTag("Result").transform) as GameObject;
                 RectTransform prefabRT = prefab.GetComponent<RectTransform>();
                 prefabRT.sizeDelta = new Vector2(0,scaleHandler.scrollField.sizeDelta.y/20);   //Make X entries fit on screen at the same time (Make 1 entry 1/20 of the viewport height)
