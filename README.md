@@ -7,11 +7,12 @@ Developed primarily for android, in **Unity 2020.2.7f1**
 
 What it do?
 
-
+**ADD DIRECTIONS FOR IMPORTANT CODE!**
 
 ### Challenges
-Understanding the API
-Having to work with a structural changing database
+**_Under Construction_**
+Understanding the API. 
+Having to work with a structural changing database.
 
 
 ### Future plans
@@ -26,6 +27,9 @@ Having to work with a structural changing database
 1. Copy the .apk file, located in the root folder of the project, to an android device
 2. Make sure "install from unknown sources" is allowed on said android device
 3. Open the .apk to install the app 
+
+If an android device is lacking, download Unity 2020.2.7f1 and open the project's root folder in Unity.
+When running it inside the Unity editor, make sure the *Index* scene is opened.
 
 ## USAGE INSTRUCTIONS
 **Card Information:** Gives information of a card, such as its card type, which archetype it belongs to, and what effect it has.
@@ -42,7 +46,7 @@ Some other examples of filter combinations:
 
 **Random Card:** Gives information of a random card. The data returned from the API is **not** identical to what is returned in Card Information
 
-**Random Archetype:** Not functional! It's supposed to return 3 random Archetypes. Might end up being scrapped, since the reason it was added was because of an idea between my friends and I.
+**Random Archetype:** Not functional! It's supposed to return 3 archetypes at random. Might end up being scrapped, since the reason it was added was because of an idea between my friends and I.
 
 | Card Name | Card ID | Card Type |
 | --------- | :-------: | --------- |
