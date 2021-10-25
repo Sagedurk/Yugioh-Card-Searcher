@@ -1,0 +1,60 @@
+# Yu-Gi-Oh! Card Searcher
+
+DESCRIPTION
+Interface for searching through YGOPRODeck's database of Yu-Gi-Oh! cards, using their API
+Developed primarily for android, in **Unity 2020.2.7f1**
+
+
+What it do?
+
+
+
+### Challenges
+Understanding the API
+Having to work with a structural changing database
+
+
+### Future plans
+* Update the whole project to use the latest API version, making it fully functional again
+* Refactor the code for better code structure
+* Object pooling on the search tab, to lessen the impact of the sheer amount of objects instantiated over a short duration
+* Successively instantiate said objects instead of doing it at the same time
+* Fix the problem with *Card Search* appending save data to an already saved card, making the file unreadable when trying to load the data
+* Including more
+
+## INSTALLATION INSTRUCTIONS
+1. Copy the .apk file, located in the root folder of the project, to an android device
+2. Make sure "install from unknown sources" is allowed on said android device
+3. Open the .apk to install the app 
+
+## USAGE INSTRUCTIONS
+**Card Information:** Gives information of a card, such as its card type, which archetype it belongs to, and what effect it has.
+A list of all the sets the card has been printed in is also provided, as well as all artworks of the card.
+A card can be found by providing either the exact card name, *case-insensitive*, or the ID. Further down, I list a handful of card names and IDs that can be used for testing purposes
+However, if searched through ID, only 1 artwork will show up, due to how the API works.
+
+**Card Search:** Lists all cards in the database, based on different search filters. You can for example find all *Dark Magician* cards by choosing the Archetype parameter and choosing Dark Magician.
+Some other examples of filter combinations: 
+* All monsters with Light attribute - *Attribute: Light*
+* ~~All cards from the set *Savage Strike*~~ - Card Set parameter is currently not working
+* All cards currently on the TCG banlist in some form - *Banlist: TCG*
+* All field spells - *Card Type: Spell Card* & *Monster/S/T Type: Field*
+
+**Random Card:** Gives information of a random card. The data returned from the API is **not** identical to what is returned in Card Information
+
+**Random Archetype:** Not functional! It's supposed to return 3 random Archetypes. Might end up being scrapped, since the reason it was added was because of an idea between my friends and I.
+
+| Card Name | Card ID | Card Type |
+| --------- | :-------: | --------- |
+| Dark Magician | 46986414 | Normal Monster |
+| Trickstar Candina | 61283655 | Effect Monster |
+| Bujinki Amaterasu | 68618157 | XYZ Monster |
+| Dark Hole | 53129443 | Normal Spell Card |
+| Mystical Space Typhoon | 63144961 | Quick-Play Spell Card |
+| Magic Cylinder | 62279055 | Normal Trap Card |
+| The Weather Thundery Canvas | 16849715 | Continuous Trap Card |
+
+
+### API documentation: https://db.ygoprodeck.com/api-guide/
+
+No license provided
