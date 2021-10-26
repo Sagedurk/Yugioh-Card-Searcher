@@ -45,7 +45,7 @@ Some other examples of filter combinations:
 * All cards currently on the TCG banlist in some form - *Banlist: TCG*
 * All field spells - *Card Type: Spell Card* & *Monster/S/T Type: Field*
 
-![Search for Ghostrick cards](/Screenshots/Ghostrick - Search.jpg)
+![Search for Ghostrick cards](Screenshots/Ghostrick - Search.jpg)
 
 
 **Random Card:** Gives information of a random card. The data returned from the API is **not** identical to what is returned in Card Information
