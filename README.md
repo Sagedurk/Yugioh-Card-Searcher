@@ -35,7 +35,7 @@ A list of all the sets the card has been printed in is also provided, as well as
 A card can be found by providing either the exact card name, *case-insensitive*, or the ID. Further down, I list a handful of card names and IDs that can be used for testing purposes
 However, if searched through ID, only 1 artwork will show up, due to how the API works.
 
-![Information about Blue-Eyes White Dragon](/Screenshots/Blue Eyes White Dragon - Info.jpg)
+![Information about Blue-Eyes White Dragon](https://github.com/Sagedurk/Yugioh-Card-Searcher/blob/master/Screenshots/Blue%20Eyes%20White%20Dragon%20-%20Info.jpg)
 
 
 **Card Search:** Lists all cards in the database, based on different search filters. You can for example find all *Dark Magician* cards by choosing the Archetype parameter and choosing Dark Magician.
