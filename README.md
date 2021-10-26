@@ -35,12 +35,18 @@ A list of all the sets the card has been printed in is also provided, as well as
 A card can be found by providing either the exact card name, *case-insensitive*, or the ID. Further down, I list a handful of card names and IDs that can be used for testing purposes
 However, if searched through ID, only 1 artwork will show up, due to how the API works.
 
+![Information about Blue-Eyes White Dragon](/Screenshots/Blue Eyes White Dragon - Info.jpg)
+
+
 **Card Search:** Lists all cards in the database, based on different search filters. You can for example find all *Dark Magician* cards by choosing the Archetype parameter and choosing Dark Magician.
 Some other examples of filter combinations: 
 * All monsters with Light attribute - *Attribute: Light*
 * ~~All cards from the set *Savage Strike*~~ - Card Set parameter is currently not working
 * All cards currently on the TCG banlist in some form - *Banlist: TCG*
 * All field spells - *Card Type: Spell Card* & *Monster/S/T Type: Field*
+
+![Search for Ghostrick cards](/Screenshots/Ghostrick - Search.jpg)
+
 
 **Random Card:** Gives information of a random card. The data returned from the API is **not** identical to what is returned in Card Information
 
