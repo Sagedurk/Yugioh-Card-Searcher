@@ -1,25 +1,23 @@
 # Yu-Gi-Oh! Card Searcher
 
-DESCRIPTION
 Interface for searching through YGOPRODeck's database of Yu-Gi-Oh! cards, using their API
+</br>
 Developed primarily for android, in **Unity 2020.2.7f1**
 
-
-What it do?
-
-**ADD DIRECTIONS FOR IMPORTANT CODE!**
+All code can be found in Assets/Resources/Scripts
+</br>
+*CardInfo*, *SaveManager*, *ScaleHandler*, *DropdownHandler*, and *DropdownOptionsHandler* are important scripts 
 
 ### Challenges
-**_Under Construction_**
-Understanding the API. 
-Having to work with a structural changing database.
-
+* Learning how to work with an API
+* Adapting to the latest API version due to earlier versions being completely deprecated
+* Having to work around the inconsistencies of the API
+* Making the UI good for as many Aspect Ratios as possible
 
 ### Future plans
 * Update the whole project to use the latest API version, making it fully functional again
 * Refactor the code for better code structure
-* Object pooling on the search tab, to lessen the impact of the sheer amount of objects instantiated over a short duration
-* Successively instantiate said objects instead of doing it at the same time
+* Rework the instantiated results on *Card Search*, to not have a severe performance spike
 * Fix the problem with *Card Search* appending save data to an already saved card, making the file unreadable when trying to load the data
 * Including more
 
@@ -28,7 +26,7 @@ Having to work with a structural changing database.
 2. Make sure "install from unknown sources" is allowed on said android device
 3. Open the .apk to install the app 
 
-If an android device is lacking, download Unity 2020.2.7f1 and open the project's root folder in Unity.
+If an android device is lacking, download Unity **2020.2.7f1** and open the project's root folder in Unity.
 When running it inside the Unity editor, make sure the *Index* scene is opened.
 
 ## USAGE INSTRUCTIONS
@@ -58,7 +56,8 @@ Some other examples of filter combinations:
 | Magic Cylinder | 62279055 | Normal Trap Card |
 | The Weather Thundery Canvas | 16849715 | Continuous Trap Card |
 
-
+ </br>
+ 
 ### API documentation: https://db.ygoprodeck.com/api-guide/
 
-No license provided
+### No license provided
