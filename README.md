@@ -65,6 +65,6 @@ Some other examples of filter combinations:
 
  </br>
  
-### API documentation: https://db.ygoprodeck.com/api-guide/
+### All data fetched is from YGOPRODeck's API: https://db.ygoprodeck.com/api-guide/
 
 ### No license provided
