@@ -1,6 +1,6 @@
 ﻿[System.Serializable]
 //Class to parse Json data to
-public class CardImageTemp
+public class CardImageParse
 {
     public int id;
     public string image_url;

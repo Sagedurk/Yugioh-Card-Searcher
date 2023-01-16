@@ -1,8 +1,8 @@
 ﻿[System.Serializable]
-public class CardSetParse
-{
+//Class to parse Json data to
+public class CardSetParse { 
     public string set_name;
     public string set_code;
-    public int num_of_cards;
-    public string tcg_date;
+    public string set_rarity;
+    public string set_price;
 }

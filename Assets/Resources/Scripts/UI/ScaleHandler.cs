@@ -8,7 +8,7 @@ public class ScaleHandler : MonoBehaviour
 {
     Text[] texts;
     public RectTransform canvas;
-    public RectTransform NotchBuffert, title, inputField, submitBtn, scrollField, errorText, image, menu, menuBuffert;
+    public RectTransform NotchBuffert, title, inputField, submitBtn, scrollField, errorText, image, menu, menuBuffert;  //menu = sceneButtons
     public RectTransform param, paramVal;
     public RectTransform archetype1, archetype2, archetype3;
     public RectTransform artworkBtnNext, artworkBtnPrev;
@@ -117,8 +117,8 @@ public class ScaleHandler : MonoBehaviour
 
     void ScaleUIChild(RectTransform parent, int childDepth, int[] childIndexes, float anchoredPosX, float anchoredPosY, float scaleX, float scaleY)
     {
-        EUS.SetChild(parent, childDepth, childIndexes).GetComponent<RectTransform>().anchoredPosition = new Vector2(anchoredPosX, anchoredPosY);
-        EUS.SetChild(parent, childDepth, childIndexes).GetComponent<RectTransform>().sizeDelta = new Vector2(scaleX, scaleY);
+        EUS.Cat_Transform.GetChildFromIndices(parent, childDepth, childIndexes).GetComponent<RectTransform>().anchoredPosition = new Vector2(anchoredPosX, anchoredPosY);
+        EUS.Cat_Transform.GetChildFromIndices(parent, childDepth, childIndexes).GetComponent<RectTransform>().sizeDelta = new Vector2(scaleX, scaleY);
     }
 
     //If ScaleUIChild gets a better solution (see comment on said function), ScaleUIDropdown won't be as complex
@@ -126,23 +126,23 @@ public class ScaleHandler : MonoBehaviour
     {
         ScaleUIChild(transform, 1, new int[] { 0 }, transform.sizeDelta.x * labelP, 0, transform.sizeDelta.x * labelS, 0);
         ScaleUIChild(transform, 1, new int[] { 1 }, transform.sizeDelta.x * arrowP, 0, transform.sizeDelta.x * arrowS, transform.sizeDelta.y * 0.6666666666666667f);
-        float arrowY = EUS.SetChild(transform, 1, new int[] { 1 }).sizeDelta.y;
+        float arrowY = EUS.Cat_Transform.GetChildFromIndices(transform, 1, new int[] { 1 }).sizeDelta.y;
         //child = SetChild(transform, 1, new int[] {1});
- /*Arrow scale*/    EUS.SetChild(transform, 1, new int[] {1}).sizeDelta = new Vector2(arrowY, arrowY);
- /*Arrow position*/ EUS.SetChild(transform, 1, new int[] {1}).anchoredPosition = new Vector2(arrowY* -0.75f, 0);
- /*Label scale*/    EUS.SetChild(transform, 1, new int[] {0}).anchoredPosition = new Vector2(arrowY, 0);
- /*Label position*/ EUS.SetChild(transform, 1, new int[] {0}).sizeDelta = new Vector2(- (arrowY * 2) + (arrowY* -0.75f / 3), 0);
+ /*Arrow scale*/    EUS.Cat_Transform.GetChildFromIndices(transform, 1, new int[] {1}).sizeDelta = new Vector2(arrowY, arrowY);
+ /*Arrow position*/ EUS.Cat_Transform.GetChildFromIndices(transform, 1, new int[] {1}).anchoredPosition = new Vector2(arrowY* -0.75f, 0);
+ /*Label scale*/    EUS.Cat_Transform.GetChildFromIndices(transform, 1, new int[] {0}).anchoredPosition = new Vector2(arrowY, 0);
+ /*Label position*/ EUS.Cat_Transform.GetChildFromIndices(transform, 1, new int[] {0}).sizeDelta = new Vector2(- (arrowY * 2) + (arrowY* -0.75f / 3), 0);
 
         ScaleUIChild(transform, 1, new int[] { 2 }, 0, transform .sizeDelta.y * 0.0666667f, 0, transform.sizeDelta.y * 5f);
         float itemHeightMod = 0.6666666666666667f;
-        EUS.SetChild(transform, 1, new int[] { 2 }).sizeDelta = new Vector2(EUS.SetChild(transform, 1, new int[] { 2 }).sizeDelta.x, transform.sizeDelta.y * itemHeightMod * amountOfItems + ((EUS.SetChild(transform, 3, new int[] { 2, 0, 0 }).sizeDelta.y - EUS.SetChild(transform, 4, new int[] { 2, 0, 0, 0 }).sizeDelta.y)) + 1);
-        EUS.SetChild(transform, 2, new int[] { 2, 0 }).sizeDelta = new Vector2(transform.sizeDelta.x * viewPort, transform.sizeDelta.y * 5f);
-        EUS.SetChild(transform, 3, new int[] { 2, 0, 0 }).sizeDelta = new Vector2(0, transform.sizeDelta.y * 0.9333333333333333f);
-        EUS.SetChild(transform, 4, new int[] { 2, 0, 0, 0 }).sizeDelta = new Vector2(0, transform.sizeDelta.y * itemHeightMod);
-        EUS.SetChild(transform, 5, new int[] { 2, 0, 0, 0, 1 }).sizeDelta = new Vector2(arrowY, arrowY);
-        ScaleUIChild(transform, 5, new int[] { 2, 0, 0, 0, 2 }, EUS.SetChild(transform, 5, new int[] { 2, 0, 0, 0, 1 }).sizeDelta.x, 0, transform.sizeDelta.x * iLabel, transform.sizeDelta.y * 0.5666666666666667f);
-        EUS.SetChild(transform, 5, new int[] { 2, 0, 0, 0, 2 }).GetComponent<Text>().fontSize = fontSize;
-        EUS.SetChild(transform, 2, new int[] { 2, 1 }).sizeDelta = new Vector2(arrowY /*+ (arrowY/10.0f)*/, 0);//transform.sizeDelta.x * scrollBar
+        EUS.Cat_Transform.GetChildFromIndices(transform, 1, new int[] { 2 }).sizeDelta = new Vector2(EUS.Cat_Transform.GetChildFromIndices(transform, 1, new int[] { 2 }).sizeDelta.x, transform.sizeDelta.y * itemHeightMod * amountOfItems + ((EUS.Cat_Transform.GetChildFromIndices(transform, 3, new int[] { 2, 0, 0 }).sizeDelta.y - EUS.Cat_Transform.GetChildFromIndices(transform, 4, new int[] { 2, 0, 0, 0 }).sizeDelta.y)) + 1);
+        EUS.Cat_Transform.GetChildFromIndices(transform, 2, new int[] { 2, 0 }).sizeDelta = new Vector2(transform.sizeDelta.x * viewPort, transform.sizeDelta.y * 5f);
+        EUS.Cat_Transform.GetChildFromIndices(transform, 3, new int[] { 2, 0, 0 }).sizeDelta = new Vector2(0, transform.sizeDelta.y * 0.9333333333333333f);
+        EUS.Cat_Transform.GetChildFromIndices(transform, 4, new int[] { 2, 0, 0, 0 }).sizeDelta = new Vector2(0, transform.sizeDelta.y * itemHeightMod);
+        EUS.Cat_Transform.GetChildFromIndices(transform, 5, new int[] { 2, 0, 0, 0, 1 }).sizeDelta = new Vector2(arrowY, arrowY);
+        ScaleUIChild(transform, 5, new int[] { 2, 0, 0, 0, 2 }, EUS.Cat_Transform.GetChildFromIndices(transform, 5, new int[] { 2, 0, 0, 0, 1 }).sizeDelta.x, 0, transform.sizeDelta.x * iLabel, transform.sizeDelta.y * 0.5666666666666667f);
+        EUS.Cat_Transform.GetChildFromIndices(transform, 5, new int[] { 2, 0, 0, 0, 2 }).GetComponent<Text>().fontSize = fontSize;
+        EUS.Cat_Transform.GetChildFromIndices(transform, 2, new int[] { 2, 1 }).sizeDelta = new Vector2(arrowY /*+ (arrowY/10.0f)*/, 0);//transform.sizeDelta.x * scrollBar
         ScaleUIChild(transform, 3, new int[] { 2, 1, 0 }, transform.sizeDelta.x * (scrollBar / 2), transform.sizeDelta.x * (scrollBar / 2), transform.sizeDelta.x * (scrollBar / 2), transform.sizeDelta.x * (scrollBar / 2));      //Same Value
         ScaleUIChild(transform, 4, new int[] { 2, 1, 0, 0 }, -transform.sizeDelta.x * (scrollBar / 2), -transform.sizeDelta.x * (scrollBar / 2), -transform.sizeDelta.x * (scrollBar / 2), -transform.sizeDelta.x * (scrollBar / 2));   //Same Value
     }

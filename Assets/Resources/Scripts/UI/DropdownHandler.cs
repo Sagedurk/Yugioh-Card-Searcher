@@ -4,418 +4,347 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using System.Reflection;
+using UnityEditor;
 
 //Handles the dropdowns (filter parameters and their respective values)
 public class DropdownHandler : MonoBehaviour
 {
-    public Dropdown parameters;
-    public Dropdown parameterValues;
-    public CardInfo card;
-    public SaveManager savemngr;
-    public DropValueViewport paramValuesViewport;
-    public List<Dropdown.OptionData> cardtype, atk, def, lvl, type, attribute, linkrating, linkmarker, pendulumscale, cardset, archetype, banlist, format;
+    #region Variables
 
-    public string urlParam0, urlParam1, urlParam2, urlParam3, urlParam4, urlParam5, urlParam6, urlParam7, urlParam8, urlParam9, urlParam10, urlParam11,
-        urlParam12, urlParam13, urlParam14, urlParam15, urlParam16, urlParam17, urlParam18;
-    
-    public string urlMod;
+
+    public Dropdown primaryDropdown;
+    public Dropdown secondaryDropdown;
+    public DropValueViewport paramValuesViewport;
+    [HideInInspector]public List<Dropdown.OptionData> cardtype, atk, def, lvl, type, attribute, linkrating, linkmarker, pendulumscale, cardset, archetype, banlist, format;
+    [HideInInspector]public string[] urlParams = new string [19];
+    [HideInInspector]public string urlMod;
+    [HideInInspector]public DropOptions dropOptions;
+
+    ApiCall apiCall;
+
+
+    public enum DropOptions
+    {
+        NONE,
+        CARD_TYPE,
+        MONSTER_TYPE,
+        ATK,
+        ATK_LESS,
+        ATK_GREATER,
+        DEF,
+        DEF_LESS,
+        DEF_GREATER,
+        LEVEL,
+        LEVEL_LESS,
+        LEVEL_GREATER,
+        ATTRIBUTE,
+        LINK_RATING,
+        LINK_MARKER,
+        PENDULUM_SCALE,
+        CARD_SET,
+        ARCHETYPE,
+        BANLIST,
+        FORMAT
+    }
+
+    #endregion
 
     void Start()
     {
-        card = GameObject.FindObjectOfType<CardInfo>();
-        parameters = GameObject.FindObjectsOfType<Dropdown>()[0];
-        parameterValues = GameObject.FindObjectsOfType<Dropdown>()[1];
-        savemngr = GameObject.FindObjectOfType<SaveManager>();
+        apiCall = ApiCall.Instance;
+        primaryDropdown = GameObject.FindObjectsOfType<Dropdown>()[0];
+        secondaryDropdown = GameObject.FindObjectsOfType<Dropdown>()[1];
 
-        cardtype.Add(new Dropdown.OptionData(""));
-        cardtype.Add(new Dropdown.OptionData("Effect Monster"));
-        cardtype.Add(new Dropdown.OptionData("Flip Effect Monster"));
-        cardtype.Add(new Dropdown.OptionData("Flip Tuner Effect Monster"));
-        cardtype.Add(new Dropdown.OptionData("Gemini Monster"));
-        cardtype.Add(new Dropdown.OptionData("Normal Monster"));
-        cardtype.Add(new Dropdown.OptionData("Normal Tuner Monster"));
-        cardtype.Add(new Dropdown.OptionData("Pendulum Effect Monster"));
-        cardtype.Add(new Dropdown.OptionData("Pendulum Flip Effect Monster"));
-        cardtype.Add(new Dropdown.OptionData("Pendulum Normal Monster"));
-        cardtype.Add(new Dropdown.OptionData("Pendulum Tuner Effect Monster"));
-        cardtype.Add(new Dropdown.OptionData("Ritual Effect Monster"));
-        cardtype.Add(new Dropdown.OptionData("Ritual Monster"));
-        cardtype.Add(new Dropdown.OptionData("Skill Card"));
-        cardtype.Add(new Dropdown.OptionData("Spell Card"));
-        cardtype.Add(new Dropdown.OptionData("Spirit Monster"));
-        cardtype.Add(new Dropdown.OptionData("Toon Monster"));
-        cardtype.Add(new Dropdown.OptionData("Trap Card"));
-        cardtype.Add(new Dropdown.OptionData("Tuner Monster"));
-        cardtype.Add(new Dropdown.OptionData("Union Effect Monster"));
-        cardtype.Add(new Dropdown.OptionData("Fusion Monster"));
-        cardtype.Add(new Dropdown.OptionData("Link Monster"));
-        cardtype.Add(new Dropdown.OptionData("Pendulum Effect Fusion Monster"));
-        cardtype.Add(new Dropdown.OptionData("Synchro Monster"));
-        cardtype.Add(new Dropdown.OptionData("Synchro Pendulum Effect Monster"));
-        cardtype.Add(new Dropdown.OptionData("Synchro Tuner Monster"));
-        cardtype.Add(new Dropdown.OptionData("XYZ Monster"));
-        cardtype.Add(new Dropdown.OptionData("XYZ Pendulum Effect Monster"));
-
-        AddCombatList(atk);
-        atk.Add(new Dropdown.OptionData("4200"));
-        atk.Add(new Dropdown.OptionData("4400"));
-        atk.Add(new Dropdown.OptionData("4500"));
-        atk.Add(new Dropdown.OptionData("4600"));
-        atk.Add(new Dropdown.OptionData("5000"));
-        AddCombatList(def);
-        def.Add(new Dropdown.OptionData("4500"));
-        def.Add(new Dropdown.OptionData("5000"));
-
-        AddIntList(lvl);
-
-        type.Add(new Dropdown.OptionData(""));
-        type.Add(new Dropdown.OptionData("Aqua"));
-        type.Add(new Dropdown.OptionData("Beast"));
-        type.Add(new Dropdown.OptionData("Beast-Warrior"));
-        type.Add(new Dropdown.OptionData("Creator-God"));
-        type.Add(new Dropdown.OptionData("Cyberse"));
-        type.Add(new Dropdown.OptionData("Dinosaur"));
-        type.Add(new Dropdown.OptionData("Divine-Beast"));
-        type.Add(new Dropdown.OptionData("Dragon"));
-        type.Add(new Dropdown.OptionData("Fairy"));
-        type.Add(new Dropdown.OptionData("Fiend"));
-        type.Add(new Dropdown.OptionData("Fish"));
-        type.Add(new Dropdown.OptionData("Insect"));
-        type.Add(new Dropdown.OptionData("Machine"));
-        type.Add(new Dropdown.OptionData("Plant"));
-        type.Add(new Dropdown.OptionData("Psychic"));
-        type.Add(new Dropdown.OptionData("Pyro"));
-        type.Add(new Dropdown.OptionData("Reptile"));
-        type.Add(new Dropdown.OptionData("Rock"));
-        type.Add(new Dropdown.OptionData("Sea Serpent"));
-        type.Add(new Dropdown.OptionData("Spellcaster"));
-        type.Add(new Dropdown.OptionData("Thunder"));
-        type.Add(new Dropdown.OptionData("Warrior"));
-        type.Add(new Dropdown.OptionData("Winged Beast"));
-        type.Add(new Dropdown.OptionData("Normal"));
-        type.Add(new Dropdown.OptionData("Field"));
-        type.Add(new Dropdown.OptionData("Equip"));
-        type.Add(new Dropdown.OptionData("Continous"));
-        type.Add(new Dropdown.OptionData("Quick-Play"));
-        type.Add(new Dropdown.OptionData("Ritual"));
-        type.Add(new Dropdown.OptionData("Counter"));
-
-        attribute.Add(new Dropdown.OptionData(""));
-        attribute.Add(new Dropdown.OptionData("WATER"));
-        attribute.Add(new Dropdown.OptionData("WIND"));
-        attribute.Add(new Dropdown.OptionData("FIRE"));
-        attribute.Add(new Dropdown.OptionData("EARTH"));
-        attribute.Add(new Dropdown.OptionData("LIGHT"));
-        attribute.Add(new Dropdown.OptionData("DARK"));
-
-        linkrating.Add(new Dropdown.OptionData(""));
-        linkrating.Add(new Dropdown.OptionData("1"));
-        linkrating.Add(new Dropdown.OptionData("2"));
-        linkrating.Add(new Dropdown.OptionData("3"));
-        linkrating.Add(new Dropdown.OptionData("4"));
-        linkrating.Add(new Dropdown.OptionData("5"));
-
-        linkmarker.Add(new Dropdown.OptionData(""));
-        linkmarker.Add(new Dropdown.OptionData("Top"));
-        linkmarker.Add(new Dropdown.OptionData("Bottom"));
-        linkmarker.Add(new Dropdown.OptionData("Left"));
-        linkmarker.Add(new Dropdown.OptionData("Right"));
-        linkmarker.Add(new Dropdown.OptionData("Bottom-Left"));
-        linkmarker.Add(new Dropdown.OptionData("Bottom-Right"));
-        linkmarker.Add(new Dropdown.OptionData("Top-Left"));
-        linkmarker.Add(new Dropdown.OptionData("Top-Right"));
-
-        AddIntList(pendulumscale);
-        pendulumscale.Add(new Dropdown.OptionData("13"));
+        PopulateCardTypeList();
+        PopulateAtkAndDefLists();
+        PopulateLvlAndScaleLists();
+        PopulateTypeList();
+        PopulateAttributeList();
+        PopulateLinkRatingList();
+        PopulateLinkMarkerList();
+        PopulateBanList();
+        PopulateFormatList();
 
         //Cardset & Archetype gets populated in [CardInfo] (~ line 460)
-
-        banlist.Add(new Dropdown.OptionData(""));
-        banlist.Add(new Dropdown.OptionData("TCG"));
-        banlist.Add(new Dropdown.OptionData("OCG"));
-        banlist.Add(new Dropdown.OptionData("GOAT"));
-
-        format.Add(new Dropdown.OptionData(""));
-        format.Add(new Dropdown.OptionData("GOAT"));
-        format.Add(new Dropdown.OptionData("OCG GOAT"));
-        format.Add(new Dropdown.OptionData("SPEED DUEL"));
-        format.Add(new Dropdown.OptionData("RUSH DUEL"));
-        format.Add(new Dropdown.OptionData("DUEL LINKS"));
     }
-    public void DropdownParams(int index)
+
+
+    #region Populate Dropdown Lists
+
+    void PopulateCardTypeList()
     {
-        if (!parameterValues.GetComponent<Dropdown>().interactable)
-            parameterValues.GetComponent<Dropdown>().interactable = true;
+        string[] options = { "", "Effect Monster", "Flip Effect Monster", "Flip Tuner Effect Monster", "Gemini Monster", 
+            "Normal Monster", "Normal Tuner Monster", "Pendulum Effect Monster", "Pendulum Flip Effect Monster", 
+            "Pendulum Normal Monster", "Pendulum Tuner Effect Monster", "Ritual Effect Monster", "Ritual Monster", 
+            "Skill Card", "Spell Card", "Spirit Monster", "Toon Monster", "Trap Card", "Tuner Monster", "Union Effect Monster", 
+            "Fusion Monster", "Link Monster", "Pendulum Effect Fusion Monster", "Synchro Monster", 
+            "Synchro Pendulum Effect Monster", "Synchro Tuner Monster", "XYZ Monster", "XYZ Pendulum Effect Monster" };
 
+        AddToDropdown(cardtype, options);
+    }
 
-        parameterValues.ClearOptions();
+    void PopulateTypeList()
+    {
+        string[] options = { "", "Aqua", "Beast", "Beast-Warrior", "Creator-God", "Cyberse", "Dinosaur", 
+            "Divine-Beast", "Dragon", "Fairy", "Fiend", "Fish", "Insect", "Machine", "Plant", "Psychic", "Pyro", 
+            "Reptile", "Rock", "Sea Serpent", "Spellcaster", "Thunder", "Warrior", "Winged Beast", "Normal", 
+            "Field", "Equip", "Continuous", "Quick-Play", "Ritual", "Counter" };
 
-        switch (index)
+        AddToDropdown(type, options);
+    }
+
+    void PopulateAttributeList()
+    {
+        string[] options = { "", "WATER", "WIND", "FIRE", "EARTH", "LIGHT", "DARK" };
+        AddToDropdown(attribute, options);
+    }
+
+    void PopulateLinkRatingList()
+    {
+        string[] options = { "", "1", "2", "3", "4", "5" };
+        AddToDropdown(linkrating, options);
+    }
+
+    void PopulateLinkMarkerList()
+    {
+        string[] options = { "", "Top", "Bottom", "Left", "Right", "Bottom-Left", "Bottom-Right", "Top-Left", "Top-Right" };
+        AddToDropdown(linkmarker, options);
+    }
+
+    void PopulateFormatList()
+    {
+        string[] options = { "", "GOAT", "OCG GOAT", "SPEED DUEL", "RUSH DUEL", "DUEL LINKS" };
+        AddToDropdown(format, options);
+    }
+
+    void PopulateBanList()
+    {
+        string[] options = { "", "TCG", "OCG", "GOAT"};
+        AddToDropdown(banlist, options);
+    }
+
+    void PopulateLvlAndScaleLists()
+    {
+        string[] options = { "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }; 
+
+        AddToDropdown(lvl, options);
+
+        AddToDropdown(pendulumscale, options);
+        pendulumscale.Add(new Dropdown.OptionData("13"));
+    }
+
+    void PopulateAtkAndDefLists()
+    {
+        string[] options = { "", "?", "0","50", "100", "150", "200", "250", "300", "350", 
+            "400", "450", "500", "550", "600", "650", "700", "750", "800", "850", "900", 
+            "950", "1000", "1100", "1200", "1300" ,"1400" ,"1500", "1600" ,"1700", "1800",
+            "1900", "2000", "2100", "2200", "2300", "2400", "2500", "2600", "2700", "2800", 
+            "2900", "3000", "3100", "3200", "3300", "3400", "3500", "3600", "3800", "4000", "4500", "5000" };
+
+        AddToDropdown(atk, options);
+        AddToDropdown(def, options);
+    }
+
+    void AddToDropdown(List<Dropdown.OptionData> listData, string[] options)
+    {
+        foreach (string optionName in options)
         {
-            case 0:
-                parameterValues.GetComponent<Dropdown>().interactable = false;
+            listData.Add(new Dropdown.OptionData(optionName));
+        }
+    }
+
+    #endregion
+
+    #region Dropdowns
+    public void OnChangePrimaryDropdown(int index)
+    {
+        if (!secondaryDropdown.interactable)
+            secondaryDropdown.interactable = true;
+
+        secondaryDropdown.ClearOptions();
+
+        dropOptions = (DropOptions)index;
+
+        switch (dropOptions)
+        {
+            case DropOptions.NONE:
+                secondaryDropdown.interactable = false;
                 break;
-            case 1:
-                GetParamData(cardtype, "&type=", savemngr.paramIndex0);
-                paramValuesViewport.amountOfItems = cardtype.Count;
+            case DropOptions.CARD_TYPE:
+                SetDropDownData(cardtype, "&type=", index);
                 break;
-            case 2:
-                GetParamData(type, "&race=", savemngr.paramIndex1);
-                paramValuesViewport.amountOfItems = type.Count;
+            case DropOptions.MONSTER_TYPE:
+                SetDropDownData(type, "&race=", index);
                 break;
-            case 3:
-                GetParamData(atk, "&atk=", savemngr.paramIndex2);
-                paramValuesViewport.amountOfItems = atk.Count;
+            case DropOptions.ATK:
+                SetDropDownData(atk, "&atk=", index);
                 break;
-            case 4:
-                GetParamData(atk, "&atk=lte", savemngr.paramIndex3);
-                paramValuesViewport.amountOfItems = atk.Count;
+            case DropOptions.ATK_LESS:
+                SetDropDownData(atk, "&atk=lte", index);
                 break;
-            case 5:
-                GetParamData(atk, "&atk=gte", savemngr.paramIndex4);
-                paramValuesViewport.amountOfItems = atk.Count;
+            case DropOptions.ATK_GREATER:
+                SetDropDownData(atk, "&atk=gte", index);
                 break;
-            case 6:
-                GetParamData(def, "&def=", savemngr.paramIndex5);
-                paramValuesViewport.amountOfItems = def.Count;
+            case DropOptions.DEF:
+                SetDropDownData(def, "&def=", index);
                 break;
-            case 7:
-                GetParamData(def, "&def=lte", savemngr.paramIndex6);
-                paramValuesViewport.amountOfItems = def.Count;
+            case DropOptions.DEF_LESS:
+                SetDropDownData(def, "&def=lte", index);
                 break;
-            case 8:
-                GetParamData(def, "&def=gte", savemngr.paramIndex7);
-                paramValuesViewport.amountOfItems = def.Count;
+            case DropOptions.DEF_GREATER:
+                SetDropDownData(def, "&def=gte", index);
                 break;
-            case 9:
-                GetParamData(lvl, "&level=", savemngr.paramIndex8);
-                paramValuesViewport.amountOfItems = lvl.Count;
+            case DropOptions.LEVEL:
+                SetDropDownData(lvl, "&level=", index);
                 break;
-            case 10:
-                GetParamData(lvl, "&level=lte", savemngr.paramIndex9);
-                paramValuesViewport.amountOfItems = lvl.Count;
+            case DropOptions.LEVEL_LESS:
+                SetDropDownData(lvl, "&level=lte", index);
                 break;
-            case 11:
-                GetParamData(lvl, "&level=gte", savemngr.paramIndex10);
-                paramValuesViewport.amountOfItems = lvl.Count;
+            case DropOptions.LEVEL_GREATER:
+                SetDropDownData(lvl, "&level=gte", index);
                 break;
-            case 12:
-                GetParamData(attribute, "&attribute=", savemngr.paramIndex11);
-                paramValuesViewport.amountOfItems = attribute.Count;
+            case DropOptions.ATTRIBUTE:
+                SetDropDownData(attribute, "&attribute=", index);
                 break;
-            case 13:
-                GetParamData(linkrating, "&link=", savemngr.paramIndex12);
-                paramValuesViewport.amountOfItems = linkrating.Count;
+            case DropOptions.LINK_RATING:
+                SetDropDownData(linkrating, "&link=", index);
                 break;
-            case 14:
-                GetParamData(linkmarker, "&linkmarker=", savemngr.paramIndex13);
-                paramValuesViewport.amountOfItems = linkmarker.Count;
+            case DropOptions.LINK_MARKER:
+                SetDropDownData(linkmarker, "&linkmarker=", index);
                 break;
-            case 15:
-                GetParamData(pendulumscale, "&scale=", savemngr.paramIndex14);
-                paramValuesViewport.amountOfItems = pendulumscale.Count;
+            case DropOptions.PENDULUM_SCALE:
+                SetDropDownData(pendulumscale, "&scale=", index);
                 break;
-            case 16:
-                GetParamData(cardset, "&cardset=", savemngr.paramIndex15);
-                paramValuesViewport.amountOfItems = cardset.Count;
+            case DropOptions.CARD_SET:
+                SetDropDownData(cardset, "&cardset=", index);
                 break;
-            case 17:
-                GetParamData(archetype, "&archetype=", savemngr.paramIndex16);
-                paramValuesViewport.amountOfItems = archetype.Count;
+            case DropOptions.ARCHETYPE:
+                SetDropDownData(archetype, "&archetype=", index);
                 break;
-            case 18:
-                GetParamData(banlist, "&banlist=", savemngr.paramIndex17);
-                paramValuesViewport.amountOfItems = banlist.Count;
+            case DropOptions.BANLIST:
+                SetDropDownData(banlist, "&banlist=", index);
                 break;
-            case 19:
-                GetParamData(format, "&format=", savemngr.paramIndex18);
-                paramValuesViewport.amountOfItems = format.Count;
+            case DropOptions.FORMAT:
+                SetDropDownData(format, "&format=", index);
                 break;
             default:
                 break;
         }
-        if (parameterValues.value == 0)
-        {
+
+        if (secondaryDropdown.value == 0)
             urlMod = "";
-        }
     }
 
-    public void DropdownParamValues(int index)
+    public void OnChangeSecondaryDropdown(int SecondaryDropdownIndex)
     {
-        string value = parameterValues.options[index].text;
-        switch (parameters.value)
+        string value = secondaryDropdown.options[SecondaryDropdownIndex].text;
+        int PrimaryDropdownIndex = primaryDropdown.value;
+        string newUrlMod = "";
+
+        switch (PrimaryDropdownIndex)
         {
             case 1:
-                SetParamData(savemngr.paramIndex0, index, "&type=");
-                urlParam0 = urlMod + value;
+                newUrlMod = "&type=";
                 break;
             case 2:
-                SetParamData(savemngr.paramIndex1, index, "&race=");
-                urlParam1 = urlMod + value;
+                newUrlMod = "&race=";
                 break;
             case 3:
-                SetParamData(savemngr.paramIndex2, index, "&atk=");
-                urlParam2 = urlMod + value;
+                newUrlMod = "&atk=";
                 break;
             case 4:
-                SetParamData(savemngr.paramIndex3, index, "&atk=lte");
-                urlParam3 = urlMod + value;
+                newUrlMod = "&atk=lte";
                 break;
             case 5:
-                SetParamData(savemngr.paramIndex4, index, "&atk=gte");
-                urlParam4 = urlMod + value;
+                newUrlMod = "&atk=gte";
                 break;
-            case 6:
-                SetParamData(savemngr.paramIndex5, index, "&def=");
-                urlParam5 = urlMod + value;
+            case 6: 
+                newUrlMod = "&def=";
                 break;
             case 7:
-                SetParamData(savemngr.paramIndex6, index, "&def=lte");
-                urlParam6 = urlMod + value;
+                newUrlMod = "&def=lte";
                 break;
             case 8:
-                SetParamData(savemngr.paramIndex7, index, "&def=gte");
-                urlParam7 = urlMod + value;
+                newUrlMod = "&def=gte";
                 break;
             case 9:
-                SetParamData(savemngr.paramIndex8, index, "&level=");
-                urlParam8 = urlMod + value;
+                newUrlMod = "&level=";
                 break;
             case 10:
-                SetParamData(savemngr.paramIndex9, index, "&level=lte");
-                urlParam9 = urlMod + value;
+                newUrlMod = "&level=lte";
                 break;
             case 11:
-                SetParamData(savemngr.paramIndex10, index, "&level=gte");
-                urlParam10 = urlMod + value;
+                newUrlMod = "&level=gte";
                 break;
             case 12:
-                SetParamData(savemngr.paramIndex11, index, "&attribute=");
-                urlParam11 = urlMod + value;
+                newUrlMod = "&attribute=";
                 break;
             case 13:
-                SetParamData(savemngr.paramIndex12, index, "&link=");
-                urlParam12 = urlMod + value;
+                newUrlMod = "&link=";
                 break;
             case 14:
-                SetParamData(savemngr.paramIndex13, index, "&linkmarker=");
-                urlParam13 = urlMod + value;
+                newUrlMod = "&linkmarker=";
                 break;
             case 15:
-                SetParamData(savemngr.paramIndex14, index, "&scale=");
-                urlParam14 = urlMod + value;
+                newUrlMod = "&scale=";
                 break;
             case 16:
-                SetParamData(savemngr.paramIndex15, index, "&cardset=");
-                urlParam15 = urlMod + value;
+                newUrlMod = "&cardset=";
                 break;
             case 17:
-                SetParamData(savemngr.paramIndex16, index, "&archetype=");
-                urlParam16 = urlMod + value;
+                newUrlMod = "&archetype=";
                 break;
             case 18:
-                SetParamData(savemngr.paramIndex17, index, "&banlist=");
-                urlParam17 = urlMod + value;
+                newUrlMod = "&banlist=";
                 break;
             case 19:
-                SetParamData(savemngr.paramIndex18, index, "&format=");
-                urlParam18 = urlMod + value;
+                newUrlMod = "&format=";
                 break;
             default:
                 break;
         }
-        card._URLMod = urlParam0 + urlParam1 + urlParam2 + urlParam3 + urlParam4 + urlParam5 + urlParam6 + urlParam7 + urlParam8
-            + urlParam9 + urlParam10 + urlParam11 + urlParam12 + urlParam13 + urlParam14 + urlParam15 + urlParam16 + urlParam17 + urlParam18;
+
+        SetParamData(apiCall.saveManager.parameterIndices[PrimaryDropdownIndex - 1], SecondaryDropdownIndex, newUrlMod);
+
+        urlParams[PrimaryDropdownIndex - 1] = urlMod + value;
+
+
+        apiCall.dropdownUrlMod = "";
+        foreach (string urlParam in urlParams)
+        {
+            apiCall.dropdownUrlMod += urlParam;
+        }
     }
 
-    void AddIntList(List<Dropdown.OptionData> listData)
+    #endregion
+
+    void SetDropDownData(List<Dropdown.OptionData> optionList, string urlModifier, int index)
     {
-        listData.Add(new Dropdown.OptionData(""));
-        listData.Add(new Dropdown.OptionData("0"));
-        listData.Add(new Dropdown.OptionData("1"));
-        listData.Add(new Dropdown.OptionData("2"));
-        listData.Add(new Dropdown.OptionData("3"));
-        listData.Add(new Dropdown.OptionData("4"));
-        listData.Add(new Dropdown.OptionData("5"));
-        listData.Add(new Dropdown.OptionData("6"));
-        listData.Add(new Dropdown.OptionData("7"));
-        listData.Add(new Dropdown.OptionData("8"));
-        listData.Add(new Dropdown.OptionData("9"));
-        listData.Add(new Dropdown.OptionData("10"));
-        listData.Add(new Dropdown.OptionData("11"));
-        listData.Add(new Dropdown.OptionData("12"));
-    }
-    void AddCombatList(List<Dropdown.OptionData> listData)
-    {
-        listData.Add(new Dropdown.OptionData(""));
-        listData.Add(new Dropdown.OptionData("0"));
-        listData.Add(new Dropdown.OptionData("50"));
-        listData.Add(new Dropdown.OptionData("100"));
-        listData.Add(new Dropdown.OptionData("150"));
-        listData.Add(new Dropdown.OptionData("200"));
-        listData.Add(new Dropdown.OptionData("250"));
-        listData.Add(new Dropdown.OptionData("300"));
-        listData.Add(new Dropdown.OptionData("350"));
-        listData.Add(new Dropdown.OptionData("400"));
-        listData.Add(new Dropdown.OptionData("450"));
-        listData.Add(new Dropdown.OptionData("500"));
-        listData.Add(new Dropdown.OptionData("550"));
-        listData.Add(new Dropdown.OptionData("600"));
-        listData.Add(new Dropdown.OptionData("650"));
-        listData.Add(new Dropdown.OptionData("700"));
-        listData.Add(new Dropdown.OptionData("750"));
-        listData.Add(new Dropdown.OptionData("800"));
-        listData.Add(new Dropdown.OptionData("850"));
-        listData.Add(new Dropdown.OptionData("900"));
-        listData.Add(new Dropdown.OptionData("950"));
-        listData.Add(new Dropdown.OptionData("1000"));
-        listData.Add(new Dropdown.OptionData("1100"));
-        listData.Add(new Dropdown.OptionData("1200"));
-        listData.Add(new Dropdown.OptionData("1300"));
-        listData.Add(new Dropdown.OptionData("1400"));
-        listData.Add(new Dropdown.OptionData("1500"));
-        listData.Add(new Dropdown.OptionData("1600"));
-        listData.Add(new Dropdown.OptionData("1700"));
-        listData.Add(new Dropdown.OptionData("1800"));
-        listData.Add(new Dropdown.OptionData("1900"));
-        listData.Add(new Dropdown.OptionData("2000"));
-        listData.Add(new Dropdown.OptionData("2100"));
-        listData.Add(new Dropdown.OptionData("2200"));
-        listData.Add(new Dropdown.OptionData("2300"));
-        listData.Add(new Dropdown.OptionData("2400"));
-        listData.Add(new Dropdown.OptionData("2500"));
-        listData.Add(new Dropdown.OptionData("2600"));
-        listData.Add(new Dropdown.OptionData("2700"));
-        listData.Add(new Dropdown.OptionData("2800"));
-        listData.Add(new Dropdown.OptionData("2900"));
-        listData.Add(new Dropdown.OptionData("3000"));
-        listData.Add(new Dropdown.OptionData("3100"));
-        listData.Add(new Dropdown.OptionData("3200"));
-        listData.Add(new Dropdown.OptionData("3300"));
-        listData.Add(new Dropdown.OptionData("3400"));
-        listData.Add(new Dropdown.OptionData("3500"));
-        listData.Add(new Dropdown.OptionData("3600"));
-        listData.Add(new Dropdown.OptionData("3800"));
-        listData.Add(new Dropdown.OptionData("4000"));
+        GetParamData(optionList, urlModifier, apiCall.saveManager.parameterIndices[index - 1]);
+        paramValuesViewport.amountOfItems = optionList.Count;
     }
 
     public void GetParamData(List<Dropdown.OptionData> option, string urlModifier, string parameterIndex)
     {
-        parameterValues.AddOptions(option);
+        secondaryDropdown.AddOptions(option);
         urlMod = urlModifier;
-        parameterValues.value = PlayerPrefs.GetInt(parameterIndex);
+        secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndex);
     }
 
     public void SetParamData(string parameterIndex, int prefsValue, string setUrlMod)
     {
-        if (parameterValues.value != 0)
-        {
+        urlMod = "";
+
+        if (secondaryDropdown.value > 0)
             urlMod = setUrlMod;
-        }
-        else
-        {
-            urlMod = "";
-        }
+        
         PlayerPrefs.SetInt(parameterIndex, prefsValue);
     }
+
+    public int GetDropOptionCount()
+    {
+        return Enum.GetValues(typeof(DropOptions)).Length;
+    }
+
 }

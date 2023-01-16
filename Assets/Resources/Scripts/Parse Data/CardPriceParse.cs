@@ -1,6 +1,6 @@
 ﻿[System.Serializable]
 //Class to parse Json data to
-public class CardPriceTemp
+public class CardPriceParse
 {
     public string cardmarket_price;
     public string tcgplayer_price;

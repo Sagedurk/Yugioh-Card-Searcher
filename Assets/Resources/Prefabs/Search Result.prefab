@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 2141061284060606597}
   - component: {fileID: 1395614994030451170}
   - component: {fileID: 318001356732508177}
-  - component: {fileID: 2280301810887904167}
+  - component: {fileID: 3639615801224203228}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -171,6 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -200,8 +201,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2280301810887904167}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 3639615801224203228}
+        m_TargetAssemblyTypeName: CardSearchResult, Assembly-CSharp
         m_MethodName: CopyCardName
         m_Mode: 1
         m_Arguments:
@@ -212,7 +213,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 1
---- !u!114 &2280301810887904167
+--- !u!114 &3639615801224203228
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -221,47 +222,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1030277297271159392}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b10adf58edf46924991331501bf57521, type: 3}
+  m_Script: {fileID: 11500000, guid: b96212dbede40cb4c95f815238999514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _URLMod: 
-  cardID: 
-  jsonSaveData: 
-  fileName: 
-  nameMod: 
-  idInputField: {fileID: 0}
-  idInput: {fileID: 0}
-  errorText: {fileID: 0}
-  id: {fileID: 0}
-  cardName: {fileID: 0}
-  cardType: {fileID: 0}
-  monsterType: {fileID: 0}
-  atk: {fileID: 0}
-  def: {fileID: 0}
-  level: {fileID: 0}
-  attribute: {fileID: 0}
-  pendulumScale: {fileID: 0}
-  archetype: {fileID: 0}
-  desc: {fileID: 0}
-  printAmount: {fileID: 0}
-  image: {fileID: 0}
-  cardInfoTransform: {fileID: 0}
-  dropDownMenu: {fileID: 0}
-  scaleHandler: {fileID: 0}
-  saveManager: {fileID: 0}
-  archetypeList: []
-  parseList: []
-  toJson: []
-  parseArchList: []
-  parseSetList: []
-  cardSetContainer: {fileID: 0}
-  artworkButtons: {fileID: 0}
-  imageIndex: 0
-  cardIDParsingResult: 0
-  nextImage: {fileID: 0}
-  previousImage: {fileID: 0}
-  showCardSets: {fileID: 0}
-  cardSetCloseBtn: {fileID: 0}
 --- !u!1 &2146352852195244686
 GameObject:
   m_ObjectHideFlags: 0

@@ -43,7 +43,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -96,8 +96,10 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 9b96f8290e49c744f8293b38fbb384ef,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -117,6 +119,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -213,7 +217,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1548197882}
   - component: {fileID: 1548197880}
-  - component: {fileID: 1548197881}
   - component: {fileID: 1548197883}
   m_Layer: 0
   m_Name: GameObject
@@ -232,18 +235,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f680f570693d5742a8efae63c6a5188, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1548197881
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1548197879}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b1483494e9055044a01a2fe0036c0bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &1548197882
@@ -272,4 +263,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 666b51fb529d2b14ebccae0e2bc74765, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parameterDropdown: {fileID: 0}
   fileData: 
+  isCoroutinePlaying: 0

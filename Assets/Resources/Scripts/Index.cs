@@ -9,6 +9,6 @@ public class Index : MonoBehaviour
     {
         PlayerPrefs.DeleteAll();
         PlayerPrefs.SetInt("parameterStartVal", 0);
-        EUS.LoadScene(1);
+        EUS.Cat_Scene.LoadScene(1);
     }
 }

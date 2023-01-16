@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 //Done
 //Third party JSON parser
-public static class JsonHelper
+public static class JsonParser
 {
     public static T[] FromJson<T>(string json)
     {
@@ -12,10 +12,20 @@ public static class JsonHelper
         return wrapper.data;
     }
 
+
+
     public static string ToJson<T>(T[] array)
     {
         Wrapper<T> wrapper = new Wrapper<T>();
         wrapper.data = array;
+        return JsonUtility.ToJson(wrapper);
+    }
+    public static string ToJson<T>(T data)
+    {
+        Wrapper<T> wrapper = new Wrapper<T>();
+        T[] dataArray = { data };
+
+        wrapper.data = dataArray;
         return JsonUtility.ToJson(wrapper);
     }
 
@@ -32,3 +42,5 @@ public static class JsonHelper
         public T[] data;
     }
 }
+
+

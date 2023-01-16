@@ -13,10 +13,9 @@ public class CardInfoParse
     public string attribute;
     public string archetype;    //The archetype a card belongs to
     public int linkval; //Link Rating
-    public string[] linkmarkers;    //Link Arrows
-    public CardSetTemp[] card_sets;
-    public CardImageTemp[] card_images;
-    public CardPriceTemp[] card_prices;
-    public int scale;   //Pendulum Scale
-    public string archetype_name;   //The name of an archetype
+    public string[] linkMarkers;    //Link Arrows
+    public int pendScale;   //Pendulum Scale
+    public CardSetParse[] card_sets;
+    public CardImageParse[] card_images;
+    public CardPriceParse[] card_prices;
 }

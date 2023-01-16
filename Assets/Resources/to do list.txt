@@ -1,21 +1,21 @@
 NOTE:	These things aren't necessarily planned to be done in this particular order.
 	The reason they are numbered are to see how many things are left to do.
 
+		Price APIs, have a user choice which Price API to use
+			YGOPRODeck has prices for these:
+				Cardmarket
+				TCGPlayer
+				Coolstuffinc
+				Ebay
+				Amazon
 
-													DONE	#1	Save data when swapping to another scene from [Card Search]
-																		DONE	dropdown values (which parameters are we using and what value do they have?)
-																		DONE	color background of selected index in left dropdown menu if the selected index in the right dropdown menu is not default (DropdownHandler:226) 
-																		DONE	Instantiate all objects again.
-																		DONE	Make sure the save/load file for [Card Search] works correctly (CardInfo:374)
+			My choices
+				Cardmarket for EU
+				TCGPlayer for NA?
 
-													DONE? 	#6	Properly scale the dropdown UI in Aspect Ratios that aren't 19.5:9 (& resolutions that aren't 1080p)
-													DONE? -	#9	Finish implementing ScaleHandler.CanvasMargin() (to all 4 scenes´?) (ScaleHandler:189)
-													DONE	#3	Save each card in [Card Search] by re-parsing to Json.
-													DONE	#8  Make it possible to get a card through ID?
-													DONE	#2	Replace WWW with UnityWebRequest
-													DONE	#1	Update cached files 
-																	Minimum API requests: Send a request to get all cards. For each card, check its name,
-																	if file exist, replace data with new Json encrypted card info.
+
+					Minimum API requests: Send a request to get all cards. For each card, check its name,
+					if file exist, replace data with new Json encrypted card info.
 
 
 

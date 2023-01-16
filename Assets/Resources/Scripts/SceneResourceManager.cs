@@ -2,19 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
 public class SceneResourceManager : MonoBehaviour
 {
-    public CardInfo cardInfo;
+
     void Start()
     {
-        cardInfo = this.gameObject.GetComponent<CardInfo>();
-
         if (EUS.sceneIndex == 2)
         {
-            cardInfo.SetID();
-            if (cardInfo.cardID != "" || cardInfo._URLMod != "")
+            ApiCall.Instance.SetID();
+            if (ApiCall.Instance.cardID != "" || ApiCall.Instance.dropdownUrlMod != "")
             {
                 /*if (System.IO.File.Exists(Application.persistentDataPath + "/" + cardInfo.cardID.ToLower() + cardInfo._URLMod.ToLower() + "_search" + ".txt"))
                 {
