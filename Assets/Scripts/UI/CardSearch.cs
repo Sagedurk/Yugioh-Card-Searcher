@@ -80,7 +80,7 @@ public class CardSearch : MonoBehaviour
 
     public void ResetPrefab()
     {
-        EUS.DestroyAll("PrefabSearch");
+        EUS.Cat_Object_Manipulation.DestroyAll("PrefabSearch");
         prefabHeight = 0;
     }
 

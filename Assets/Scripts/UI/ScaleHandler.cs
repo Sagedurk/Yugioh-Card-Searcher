@@ -31,7 +31,7 @@ public class ScaleHandler : MonoBehaviour
             foreach (GameObject button in menuButton)
             {
                 RectTransform rect = button.GetComponent<RectTransform>();
-                rect.sizeDelta = new Vector2(rectBase.sizeDelta.x / 4, rect.sizeDelta.y);
+                rect.sizeDelta = new Vector2(rectBase.sizeDelta.x / menuButton.Length, rect.sizeDelta.y);
 
             }
         }

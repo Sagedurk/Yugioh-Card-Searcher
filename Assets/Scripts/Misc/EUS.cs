@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEditor;
+using System.IO;
+using System.Text.RegularExpressions;
 
 //Engine Utility System
 /* The idea with EUS is to be a smaller library of generally useful functions, which can be used across different projects
@@ -103,7 +105,20 @@ public class EUS
     
     }
 
-    public static class Cat_Object_Manipulation { }
+    public static class Cat_Object_Manipulation 
+    {
+        public static void DestroyAll(string tag)
+        {
+            GameObject[] targets = GameObject.FindGameObjectsWithTag(tag);
+            foreach (GameObject target in targets)
+            {
+                Object.Destroy(target);
+            }
+        }
+
+
+
+    }
     public static class Cat_UI
     {
         public static void HideUI(string tag)
@@ -150,23 +165,80 @@ public class EUS
     public static class Cat_Physics { }
     public static class Cat_Scene 
     {
-        public enum Scenes
+        public enum LoadType
         {
-            Scene1 = 0, 
-            Scene2 = 1, 
-            Scene3 = 2, 
-            Scene4 = 3,
-            Scene5 = 4, 
-            Scene6 = 5, 
-            Scene7 = 6, 
-            Scene8 = 7, 
-            Scene9 = 8,
+            /// <summary>
+            /// If using single type loading and the scene is small
+            /// <br/> Use this to avoid unnecessary loading screens
+            /// </summary>
+            SINGLE,
+            /// <summary>
+            /// If using single type loading and the scene isn't small
+            /// <br/> Use this to avoid bad user experience
+            /// </summary>
+            SINGLE_LOADING_SCREEN,
+            /// <summary>
+            /// Use this for additive type loading
+            /// </summary>
+            ADDITIVE,
         }
 
-        public static int sceneIndex = -1;
+
         private static float progressThreshold = 0.9f;
 
-        public static IEnumerator LoadingScreen(Scenes sceneToLoad)
+        public static void LoadScene(SceneNames sceneToLoad, LoadType loadType)
+        {
+            int sceneIndex = (int)sceneToLoad;
+
+            if (sceneIndex == -1)
+            {
+                Debug.LogError("Attempting to load disabled scene: " + sceneToLoad.ToString());
+                return;
+            }
+
+
+            switch (loadType)
+            {
+
+                case LoadType.SINGLE:
+                    SceneManager.LoadScene(sceneIndex);
+                    break;
+
+                case LoadType.SINGLE_LOADING_SCREEN:
+                    SceneManager.LoadSceneAsync(sceneIndex);
+                    break;
+
+                case LoadType.ADDITIVE:
+
+                    SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Additive);
+                    break;
+                default:
+                    break;
+            }
+
+
+
+
+        }
+
+        public static void UnloadScene(SceneNames sceneToUnload)
+        {
+            int sceneIndex = (int)sceneToUnload;
+
+            if (sceneIndex == -1)
+            {
+                Debug.LogError("Attempting to unLoad disabled scene: " + sceneToUnload.ToString());
+                return;
+            }
+
+
+
+        }
+
+
+
+
+        public static IEnumerator LoadingScreen(SceneNames sceneToLoad)
         {
 
             AsyncOperation operation = SceneManager.LoadSceneAsync((int)sceneToLoad);
@@ -195,17 +267,6 @@ public class EUS
 
 
         
-
-        public static void LoadScene(int index)
-        {
-            if (sceneIndex != 0)
-            {
-                saveManager.SaveData();
-            }
-
-            sceneIndex = index;
-            SceneManager.LoadScene(index);
-        }
 
 
     }
@@ -245,27 +306,132 @@ public class EUS
                     Destroy(gameObject);
                 }
             }
-        }  
-
-    }
-
-
-
-
-
-
-    public static void DestroyAll(string tag)
-    {
-        GameObject[] targets = GameObject.FindGameObjectsWithTag(tag);
-        foreach(GameObject target in targets)
-        {
-            Object.Destroy(target);
         }
+
+
+        [InitializeOnLoad]
+        public class GenerateEnum
+        {
+            static string enumFilePath = "Assets/Scripts/DynamicEnums/";
+            static GenerateEnum()
+            {
+                EditorBuildSettings.sceneListChanged += OnSceneListChanged;
+            }
+
+            public static void GenerateDynamicEnum(string enumName, string filePath, string[] enumEntries, string[] disabledEnumEntries = null)
+            {
+                if (!Directory.Exists(filePath))
+                    Directory.CreateDirectory(filePath);
+
+                using (StreamWriter streamWriter = new StreamWriter(filePath + enumName + "DynamicEnum.cs"))
+                {
+                    streamWriter.WriteLine("public enum " + enumName);
+                    streamWriter.WriteLine("{");
+
+                    WriteEnumEntriesToFile(streamWriter, enumEntries);
+
+                    if (disabledEnumEntries != null)
+                    {
+                        WriteEnumEntriesToFile(streamWriter, disabledEnumEntries, true);
+                    }
+
+                    streamWriter.WriteLine("}");
+                }
+                AssetDatabase.Refresh();
+            }
+
+
+            private static void OnSceneListChanged()
+            {
+                GenerateSceneEnum();
+            }
+
+
+            private static Dictionary<int, string> GetBuildScenes(out Dictionary<int, string> disabledScenes)
+            {
+                Dictionary<int, string> sceneData = new Dictionary<int, string>();
+                Dictionary<int, string> sceneDataDisabled = new Dictionary<int, string>();
+                EditorBuildSettingsScene[] buildSettingsScenes = EditorBuildSettings.scenes;
+                int disabledSceneCounter = 0;
+
+                for (int i = 0; i < buildSettingsScenes.Length; i++)
+                {
+                    SceneAsset sceneAsset = (SceneAsset)AssetDatabase.LoadAssetAtPath(buildSettingsScenes[i].path, typeof(SceneAsset));
+
+                    if (!buildSettingsScenes[i].enabled)
+                    {
+                        sceneDataDisabled.Add(disabledSceneCounter, sceneAsset.name);
+                        disabledSceneCounter++;
+                        continue;
+                    }
+
+                    sceneData.Add(i - disabledSceneCounter, sceneAsset.name);
+                }
+
+                disabledScenes = sceneDataDisabled;
+                return sceneData;
+            }
+
+
+            private static void GenerateSceneEnum()
+            {
+                Dictionary<int, string> scenes = GetBuildScenes(out Dictionary<int, string> disabledScenes);
+
+
+                string[] sceneNames = new string[scenes.Count];
+
+                for (int i = 0; i < scenes.Count; i++)
+                {
+                    scenes.TryGetValue(i, out string sceneName);
+                    sceneNames[i] = sceneName;
+                }
+
+                string[] disabledSceneNames = new string[disabledScenes.Count];
+                for (int i = 0; i < disabledScenes.Count; i++)
+                {
+                    disabledScenes.TryGetValue(i, out string sceneName);
+                    disabledSceneNames[i] = sceneName;
+                }
+
+                GenerateDynamicEnum("SceneNames", enumFilePath, sceneNames, disabledSceneNames);
+
+            }
+
+            #region Helper Functions
+            private static void WriteEnumEntriesToFile(StreamWriter streamWriter, string[] entries, bool isDisabled = false)
+            {
+                for (int i = 0; i < entries.Length; i++)
+                {
+                    string currentEntry = ConvertToValidEnumName(entries[i]);
+                    int value = isDisabled ? -1 : i;
+
+                    streamWriter.WriteLine($"\t{currentEntry} = {value}{(isDisabled ? ",    //DISABLED SCENE" : ",")}");
+                }
+            }
+
+            private static string ConvertToValidEnumName(string input)
+            {
+                //Remove Numbers
+                input = Regex.Replace(input, @"[\d-]", string.Empty);
+
+                //Remove Leading Whitespace
+                input = Regex.Replace(input, @"^\s+", "");
+
+                //Replace Whitespace With Underscores
+                input = Regex.Replace(input, @"\s+", "_");
+
+                //Convert To Uppercase
+                input = input.ToUpper();
+
+                return input;
+            }
+
+            #endregion
+
+        }
+
+
     }
-
-    
-   
-
 
 
 
