@@ -15,7 +15,6 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
     public CardInfo cardInfo;
     public CardSearch cardSearch;
 
-    public SaveManager saveManager;
     public ApiTypes apiType;
     public LoadTypes loadType;
 
@@ -121,7 +120,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         }
 
         PrepToFileName(cardName);
-        CardDataSO instance = saveManager.TryGetCardDataInstance(fileName);
+        CardDataSO instance = SaveManager.Instance.TryGetCardDataInstance(fileName);
 
 
         //Get data from local file
@@ -133,7 +132,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             CardInfoParse loadedData = instance.LoadValues();
 
             string loadedDataJson = JsonParser.ToJson(loadedData);
-            saveManager.fileData = loadedDataJson;
+            SaveManager.Instance.fileData = loadedDataJson;
 
             cardInfo.ClearTextInfo(cardInfo.errorText, true);
             StartCoroutine(LoadCardInfo()); 
@@ -156,7 +155,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
        
         if (File.Exists(Application.persistentDataPath + "/" + fileName.ToLower() + dropdownUrlMod.ToLower() + " search" + ".txt"))
         {
-            saveManager.ReadFile(fileName + dropdownUrlMod + " search");
+            SaveManager.Instance.ReadFile(fileName + dropdownUrlMod + " search");
             cardSearch.ResetPrefab();
             cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.errorText }, true);
                 
@@ -298,8 +297,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
                 break;
 
             case LoadTypes.FILE:
-                yield return saveManager.fileData;
-                jsonData = saveManager.fileData;
+                yield return SaveManager.Instance.fileData;
+                jsonData = SaveManager.Instance.fileData;
                 break;
         }
 
@@ -309,7 +308,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         CardInfoParse card = cardInfo.fetchedCards[0];
         SaveAPIData(cardInfo.fetchedCards);
 
-        saveManager.CreateID_LUTs(card);
+        SaveManager.Instance.CreateID_LUTs(card);
         StartCoroutine(cardInfo.ConvertData(card));
     }
 
@@ -328,8 +327,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
                 break;
 
             case LoadTypes.FILE:
-                yield return saveManager.fileData;
-                jsonData = saveManager.fileData;
+                yield return SaveManager.Instance.fileData;
+                jsonData = SaveManager.Instance.fileData;
                 break;
         }
 
@@ -400,7 +399,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             PrepToFileName(card.name);
 
 
-            saveManager.CreateCardDataInstance(card);
+            SaveManager.Instance.CreateCardDataInstance(card);
             
             //saveManager.WriteFile(fileName, webRequest.downloadHandler.text);
         }
@@ -485,8 +484,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.errorText });
         if (System.IO.File.Exists(Application.persistentDataPath + "/cardsets.txt"))
         {
-            saveManager.ReadFile("cardsets");
-            yield return StartCoroutine(LoadCardSetInfo(null, saveManager.fileData));
+            SaveManager.Instance.ReadFile("cardsets");
+            yield return StartCoroutine(LoadCardSetInfo(null, SaveManager.Instance.fileData));
         }
         else
         {
@@ -546,8 +545,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.errorText });
         if (System.IO.File.Exists(Application.persistentDataPath + "/archetypes.txt"))
         {
-            saveManager.ReadFile("archetypes");
-            yield return StartCoroutine(LoadArchetypeInfo(null, saveManager.fileData));
+            SaveManager.Instance.ReadFile("archetypes");
+            yield return StartCoroutine(LoadArchetypeInfo(null, SaveManager.Instance.fileData));
         }
         else
         {

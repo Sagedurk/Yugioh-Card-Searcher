@@ -39,7 +39,7 @@ public class DropdownLoader : MonoBehaviour
             {
                 dropdownHandler.OnChangePrimaryDropdown(i);
                 yield return StartCoroutine(apiCall.GetCardSet());
-                secondaryDropdown.value = PlayerPrefs.GetInt(apiCall.saveManager.parameterIndices[i - 1]);
+                secondaryDropdown.value = PlayerPrefs.GetInt(SaveManager.Instance.parameterIndices[i - 1]);
                 //index out of range
                 //parameterHandler.DropdownParamValues(PlayerPrefs.GetInt(parameterHandler.savemngr.paramIndex15));
             }
@@ -66,8 +66,8 @@ public class DropdownLoader : MonoBehaviour
     void SetSecondaryDropdownValue(int index)
     {
         dropdownHandler.OnChangePrimaryDropdown(index);
-        secondaryDropdown.value = PlayerPrefs.GetInt(apiCall.saveManager.parameterIndices[index - 1]);
-        dropdownHandler.OnChangeSecondaryDropdown(PlayerPrefs.GetInt(apiCall.saveManager.parameterIndices[index - 1]));
+        secondaryDropdown.value = PlayerPrefs.GetInt(SaveManager.Instance.parameterIndices[index - 1]);
+        dropdownHandler.OnChangeSecondaryDropdown(PlayerPrefs.GetInt(SaveManager.Instance.parameterIndices[index - 1]));
     }
 
 }

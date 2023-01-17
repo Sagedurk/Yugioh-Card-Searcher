@@ -305,7 +305,7 @@ public class DropdownHandler : MonoBehaviour
                 break;
         }
 
-        SetParamData(apiCall.saveManager.parameterIndices[PrimaryDropdownIndex - 1], SecondaryDropdownIndex, newUrlMod);
+        SetParamData(SaveManager.Instance.parameterIndices[PrimaryDropdownIndex - 1], SecondaryDropdownIndex, newUrlMod);
 
         urlParams[PrimaryDropdownIndex - 1] = urlMod + value;
 
@@ -321,7 +321,7 @@ public class DropdownHandler : MonoBehaviour
 
     void SetDropDownData(List<Dropdown.OptionData> optionList, string urlModifier, int index)
     {
-        GetParamData(optionList, urlModifier, apiCall.saveManager.parameterIndices[index - 1]);
+        GetParamData(optionList, urlModifier, SaveManager.Instance.parameterIndices[index - 1]);
         paramValuesViewport.amountOfItems = optionList.Count;
     }
 

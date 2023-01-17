@@ -2583,7 +2583,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1204103018
 GameObject:
@@ -2948,7 +2948,7 @@ RectTransform:
   - {fileID: 1852529801}
   - {fileID: 304216603}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3640,7 +3640,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardInfo: {fileID: 1903723843}
   cardSearch: {fileID: 0}
-  saveManager: {fileID: 1927041954}
+  saveManager: {fileID: 1090569791}
   apiType: 0
   loadType: 0
   dropdownUrlMod: 
@@ -3793,18 +3793,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1927041952}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1927041954 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5449043550886807509, guid: 6680ba69ab17ef94599d1bb55aeb76a5,
-    type: 3}
-  m_PrefabInstance: {fileID: 1927041952}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 666b51fb529d2b14ebccae0e2bc74765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1998441317
 GameObject:
   m_ObjectHideFlags: 0
