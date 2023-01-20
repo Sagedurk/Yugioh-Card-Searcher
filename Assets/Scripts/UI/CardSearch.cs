@@ -66,8 +66,8 @@ public class CardSearch : MonoBehaviour
 
             if (ApiCall.Instance.loadType == LoadTypes.API)
             {
-                ApiCall.Instance.PrepToFileName(card.name);
-                ApiCall.Instance.jsonSaveData.WriteStringToFile(SaveManager.parameterDirectory, ApiCall.Instance.fileName, SaveManager.cardFileType);
+                string cardFileName = card.name.ConvertToValidFileName();
+                ApiCall.Instance.jsonSaveData.WriteStringToFile(SaveManager.parameterDirectory, cardFileName, SaveManager.cardFileType);
                 //ApiCall.Instance.saveManager.WriteFile(ApiCall.Instance.fileName, ApiCall.Instance.jsonSaveData);
                 // saveManager.WriteFile(parseList[i].id.ToString(), jsonSaveData);
             }

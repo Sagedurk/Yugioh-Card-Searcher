@@ -16,7 +16,7 @@ public class CardID_LUT
 
         foreach (CardImageParse image in card.card_images)
         {
-            if (File.Exists(SaveManager.idLutDirectory + image.id + SaveManager.idLutFileType))
+            if (File.Exists(SaveManager.idLutDirectory + image.id.ToString() + SaveManager.idLutFileType))
                 continue;
             
             CardID_LUT instance = new CardID_LUT();

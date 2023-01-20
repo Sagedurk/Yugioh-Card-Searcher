@@ -119,17 +119,15 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             
         }
 
-        PrepToFileName(cardName);
-        CardDataSO instance = SaveManager.Instance.TryGetCardDataInstance(fileName);
+        string cardFileName = cardName.ConvertToValidFileName();
+        CardInfoParse loadedData = SaveManager.Instance.TryGetSavedCard(cardFileName);
 
 
         //Get data from local file
-        if (instance != null)
+        if (loadedData != null)
         {
             Debug.Log("Load card data!");
             loadType = LoadTypes.FILE;
-
-            CardInfoParse loadedData = instance.LoadValues();
 
             string loadedDataJson = JsonParser.ToJson(loadedData);
             SaveManager.Instance.fileData = loadedDataJson;
@@ -151,11 +149,12 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
     private void CardSearchExecute()
     {
-        PrepToFileName(cardID);
+        string fileNameCardID = cardID.ConvertToValidFileName();
        
-        if (File.Exists(Application.persistentDataPath + "/" + fileName.ToLower() + dropdownUrlMod.ToLower() + " search" + ".txt"))
-        {
-            SaveManager.Instance.ReadFile(fileName + dropdownUrlMod + " search");
+        
+        string fileContent = SaveManager.Instance.ReadFile(SaveManager.parameterDirectory,fileNameCardID + dropdownUrlMod, SaveManager.parameterFileType);
+
+        if (fileContent != ""){
             cardSearch.ResetPrefab();
             cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.errorText }, true);
                 
@@ -303,12 +302,14 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         }
 
         cardInfo.fetchedCards = JsonParser.FromJson<CardInfoParse>(jsonData);
+
+
         #endregion
 
         CardInfoParse card = cardInfo.fetchedCards[0];
-        SaveAPIData(cardInfo.fetchedCards);
 
-        SaveManager.Instance.CreateID_LUTs(card);
+        SaveAPIData(cardInfo.fetchedCards);
+        SaveManager.CreateID_LUTs(card);
         StartCoroutine(cardInfo.ConvertData(card));
     }
 
@@ -363,31 +364,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
 
     #region File Name Functions
-    public void PrepToFileName(string fileNameInsert)
-    {
-        fileName = fileNameInsert;
-        ReplaceToValidFileName(":", "_");
-        ReplaceToValidFileName("/", "=");
-        ReplaceToValidFileName("?", "ʔ");
-        ReplaceToValidFileName("%", "¤");
-        ReplaceToValidFileName("\"", "^");
-    }
-
-    public void PrepFromFileName()
-    {
-        ReplaceToValidFileName("_", ":");
-        ReplaceToValidFileName("=", "/");
-        ReplaceToValidFileName("ʔ", "?");
-        ReplaceToValidFileName("¤", "%");
-        ReplaceToValidFileName("^", "\"");
-    }
-    private void ReplaceToValidFileName(string toReplace, string replaceTo)
-    {
-        if (fileName.Contains(toReplace))
-        {
-            fileName = fileName.Replace(toReplace, replaceTo);
-        }
-    }
+    
+    
 
     void SaveAPIData(CardInfoParse[] cards)
     {
@@ -396,14 +374,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             if (loadType != LoadTypes.API)
                 break;
 
-            PrepToFileName(card.name);
-
-
-            SaveManager.Instance.CreateCardDataInstance(card);
-            
-            //saveManager.WriteFile(fileName, webRequest.downloadHandler.text);
+            SaveManager.SaveCard(card);
         }
-        
     }
     #endregion
 
@@ -482,9 +454,9 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
         if (cardInfo.errorText != null)
             cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.errorText });
-        if (System.IO.File.Exists(Application.persistentDataPath + "/cardsets.txt"))
+        if (File.Exists(SaveManager.rootDirectory + "cardsets.txt"))
         {
-            SaveManager.Instance.ReadFile("cardsets");
+            SaveManager.Instance.ReadFile(SaveManager.rootDirectory ,"cardsets", ".txt");
             yield return StartCoroutine(LoadCardSetInfo(null, SaveManager.Instance.fileData));
         }
         else
@@ -543,9 +515,9 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
         if (cardInfo.errorText != null)
             cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.errorText });
-        if (System.IO.File.Exists(Application.persistentDataPath + "/archetypes.txt"))
+        if (System.IO.File.Exists(SaveManager.rootDirectory + "archetypes.txt"))
         {
-            SaveManager.Instance.ReadFile("archetypes");
+            SaveManager.Instance.ReadFile(SaveManager.rootDirectory, "archetypes", ".txt");
             yield return StartCoroutine(LoadArchetypeInfo(null, SaveManager.Instance.fileData));
         }
         else

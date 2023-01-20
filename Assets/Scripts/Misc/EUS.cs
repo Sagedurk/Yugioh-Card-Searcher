@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 /* The idea with EUS is to be a smaller library of generally useful functions, which can be used across different projects
  * and functions which can't really be placed somewhere else
  * e.g. destroy all objects with a specific tag */
-public class EUS
+public static class EUS
 {
     public static int sceneIndex = 0;
     static SaveManager saveManager;
@@ -432,7 +432,41 @@ public class EUS
 
 
     }
+    
 
 
+}
+public static class ExtensionMethods
+{
+    public static void CheckAndReplace(this string stringRef, string toReplace, string replaceTo)
+    {
+        if (stringRef.Contains(toReplace))
+        {
+            stringRef = stringRef.Replace(toReplace, replaceTo);
+        }
+    }
+
+    public static string ConvertToValidFileName(this string stringRef)
+    {
+        string returnString = stringRef;
+        returnString.CheckAndReplace(":", "_");
+        returnString.CheckAndReplace("/", "=");
+        returnString.CheckAndReplace("?", "ʔ");
+        returnString.CheckAndReplace("%", "¤");
+        returnString.CheckAndReplace("\"", "^");
+
+        return returnString;
+    }
+
+    public static string PrepFromFileName(this string stringRef)
+    {
+        string returnString = stringRef;
+        returnString.CheckAndReplace("_", ":");
+        returnString.CheckAndReplace("=", "/");
+        returnString.CheckAndReplace("ʔ", "?");
+        returnString.CheckAndReplace("¤", "%");
+        returnString.CheckAndReplace("^", "\"");
+        return returnString;
+    }
 
 }

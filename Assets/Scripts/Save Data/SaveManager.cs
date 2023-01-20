@@ -214,7 +214,7 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
 
     #region ID_LUT
 
-    public void CreateID_LUTs(CardInfoParse card)
+    public static void CreateID_LUTs(CardInfoParse card)
     {
         CardID_LUT.TryCreateLUTs(card);
     }
@@ -244,25 +244,21 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
 
     #region CardData
 
-    public void CreateCardDataInstance(CardInfoParse card)
+    public CardInfoParse TryGetSavedCard(string cardName)
     {
-        CardDataSO.TryCreateInstance(card);
+        if (File.Exists(cardDirectory + cardName + cardFileType))
+        {
+            CardInfoParse[] loadedData = ReadFile<CardInfoParse>(cardDirectory, cardName, cardFileType);
+            return loadedData[0];
+        }
+
+        return null;
     }
 
-
-    public CardDataSO TryGetCardDataInstance(string cardName)
+    public static void SaveCard(CardInfoParse card)
     {
-        CardDataSO.TryGetNonNullInstance(cardName, out CardDataSO instance);
-        return instance;
-    }
-
-
-    public static CardInfoParse TryGetSavedCard(string cardName)
-    {
-        CardInfoParse[] loadedData = ReadFile<CardInfoParse>(cardDirectory, cardName, cardFileType);
-
-        return loadedData[0];
-
+        string cardFileName = card.name.ConvertToValidFileName();
+        card.WriteClassToFile(cardDirectory, cardFileName, cardFileType);
     }
 
     #endregion
@@ -321,9 +317,18 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
             apiCall.cardInfo.desc.rectTransform.anchoredPosition = apiCall.cardInfo.archetype.rectTransform.anchoredPosition;
         apiCall.cardInfo.desc.rectTransform.anchoredPosition = apiCall.cardInfo.archetype.rectTransform.anchoredPosition - new Vector2(0, -apiCall.cardInfo.cardName.rectTransform.anchoredPosition.y);
     }
-    public void ReadFile(string path)
+    public string ReadFile(string directory, string fileName, string fileType)
     {
-        fileData = File.ReadAllText(Application.persistentDataPath + "/" + path.ToLower() + ".txt");
+        string fileContent = "";
+        string fullPath = directory + fileName.ToLower() + fileType;
+
+        if (File.Exists(fullPath))
+        {
+            fileContent = File.ReadAllText(fullPath);
+        }
+
+        return fileContent;
+
     }
 
     public static T[] ReadFile<T> (string directory, string fileName, string fileType)
@@ -374,19 +379,18 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
         
         if ( !string.IsNullOrWhiteSpace(_cardInput)|| !string.IsNullOrWhiteSpace(apiCall.dropdownUrlMod))
         {
-            Debug.Log( "URLMOD LOAD" + _cardInput + apiCall.dropdownUrlMod);
-            apiCall.PrepToFileName(apiCall.cardID);
-            Debug.Log(apiCall.fileName.ToLower() + apiCall.dropdownUrlMod.ToLower() + " search" + ".txt");
-            if (System.IO.File.Exists(Application.persistentDataPath + "/" + apiCall.fileName.ToLower() + apiCall.dropdownUrlMod.ToLower() + " search" + ".txt"))
+            string fileNameCardID = apiCall.cardID.ConvertToValidFileName();
+
+            string fileContent = ReadFile(parameterDirectory,fileNameCardID + apiCall.dropdownUrlMod, parameterFileType);
+
+            if (fileContent != "")
             {
-                Debug.Log("yes");
-                ReadFile(apiCall.fileName + apiCall.dropdownUrlMod + " search");
                 apiCall.cardSearch.ResetPrefab();
                 apiCall.cardInfo.ClearTextInfo(apiCall.cardInfo.errorText);
 
                 apiCall.loadType = ApiCall.LoadTypes.FILE;
                 StartCoroutine(apiCall.LoadCardSearch());
-            }   
+            } 
         }
     }
 
@@ -406,31 +410,31 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
 
     void SetRootDirectory()
     {
-        rootDirectory = Application.persistentDataPath;
+        rootDirectory = Application.persistentDataPath + "/";
     }
 
     void SetCardDirectory()
     {
-        cardDirectory = rootDirectory + "/Cards/";
+        cardDirectory = rootDirectory + "Cards/";
     }
 
     void SetIdLutDirectory()
     {
-        idLutDirectory = rootDirectory + "/ID_LUTs/";
+        idLutDirectory = rootDirectory + "ID_LUTs/";
     }
 
     void SetImageDirectory()
     {
         imageDirectories = new string[3];
 
-        imageDirectories[0] = rootDirectory + "/Images/Large/";
-        imageDirectories[1] = rootDirectory + "/Images/Small/";
-        imageDirectories[2] = rootDirectory + "/Images/Cropped/";
+        imageDirectories[0] = rootDirectory + "Images/Large/";
+        imageDirectories[1] = rootDirectory + "Images/Small/";
+        imageDirectories[2] = rootDirectory + "Images/Cropped/";
     }
 
     void SetParameterDirectory()
     {
-        parameterDirectory = rootDirectory + "/Search/";
+        parameterDirectory = rootDirectory + "Search/";
     }
 
     void DebugDirectories()
@@ -498,6 +502,8 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
         }
     }
 
+
+
     #endregion
 
 }
@@ -535,6 +541,7 @@ public static class SaveManagerExtensions
         writer.Close();
     }
 
+    
 
     public static void SaveImage(this byte[] imageBytes, string directory, string fileName, string fileType, bool isOverwriting = false)
     {
