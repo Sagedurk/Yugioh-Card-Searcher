@@ -10,9 +10,10 @@ public class CardSearch : MonoBehaviour
     GameObject prefab;
     public ScaleHandler scaleHandler;
     public RectTransform cardSearchTransform;
+    public DropdownHandler dropDownMenu;
+    [SerializeField] Button submitButton;
     [HideInInspector] public float prefabHeight = 0;
-    [HideInInspector]public CardInfoParse[] fetchedCards;
-
+    [HideInInspector] public CardInfoParse[] fetchedCards;
 
 
     public void ConvertData(CardInfoParse[] cards)
@@ -89,6 +90,12 @@ public class CardSearch : MonoBehaviour
         //Sets the height of the scrollable object so that the generated text and buttons doesn't get cut off too early
         yield return prefab.GetComponent<RectTransform>().sizeDelta;
         cardSearchTransform.sizeDelta = new Vector2(cardSearchTransform.sizeDelta.x, (prefab.GetComponent<RectTransform>().sizeDelta.y - prefab.GetComponent<RectTransform>().anchoredPosition.y));
+    }
+
+    public void SetSubmitButtonListener()
+    {
+        submitButton.onClick.RemoveAllListeners();
+        submitButton.onClick.AddListener(() => ApiCall.Instance.Execute());
     }
 
 }

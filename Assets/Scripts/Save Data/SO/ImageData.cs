@@ -10,34 +10,36 @@ public class ImageData
 {
     byte[] imageLarge;    
     byte[] imageSmall;    
-    byte[] imageCropped;  
-    
-    static string fileType = ".jpg";
+    byte[] imageCropped;
 
-    public static ImageData CreateImageData(int imageID, byte[] largeImage, byte[] smallImage, byte[] croppedImage)
+    public int id;
+    bool hasAllImages;
+
+    public static string fileType = ".jpg";
+
+    public static ImageData CreateImageData(int imageID)
     {
         ImageData data = new ImageData();
-
-        data.SetImages(largeImage, smallImage, croppedImage);
-        data.SaveImages(imageID.ToString());
-
-
+        data.id = imageID;
+        data.hasAllImages = true;
         return data;
     }
     public static ImageData TryGetImageData(int imageID)
     {
-        ImageData instance = new ImageData();
-
         byte[] largeImage = TryGetImage(SaveManager.imageDirectories[0], imageID);
         byte[] smallImage = TryGetImage(SaveManager.imageDirectories[1], imageID);
         byte[] croppedImage = TryGetImage(SaveManager.imageDirectories[2], imageID);
 
 
         //If data not found
-        if (largeImage == null || smallImage == null || croppedImage == null)
+        if (largeImage == null && smallImage == null && croppedImage == null)
             return null;
 
+        ImageData instance = CreateImageData(imageID);
         instance.SetImages(largeImage, smallImage, croppedImage);
+
+        if (largeImage == null || smallImage == null || croppedImage == null)
+            instance.hasAllImages = false;
 
         return instance;
     }
@@ -54,6 +56,23 @@ public class ImageData
 
     }
 
+    public void SetImage(ApiCall.ImageTypes imageType, byte[] imageData)
+    {
+        switch (imageType)
+        {
+            case ApiCall.ImageTypes.LARGE:
+                imageLarge = imageData;
+                break;
+            case ApiCall.ImageTypes.SMALL:
+                imageSmall = imageData;
+                break;
+            case ApiCall.ImageTypes.CROPPED:
+                imageCropped = imageData;
+                break;
+            default:
+                break;
+        }
+    }
 
     public void SetImages(byte[] large, byte[] small, byte[] cropped)
     {
@@ -77,11 +96,16 @@ public class ImageData
         return imageCropped;
     }
 
-    public void SaveImages(string fileName)
+    public bool HasImages()
     {
-        imageLarge.SaveImage(SaveManager.imageDirectories[0], fileName, fileType);
-        imageSmall.SaveImage(SaveManager.imageDirectories[1], fileName, fileType);
-        imageCropped.SaveImage(SaveManager.imageDirectories[2], fileName, fileType);
+        return hasAllImages;
+    }
+
+    public void SaveImages()
+    {
+        imageLarge.SaveImage(SaveManager.imageDirectories[0], id.ToString(), fileType);
+        imageSmall.SaveImage(SaveManager.imageDirectories[1], id.ToString(), fileType);
+        imageCropped.SaveImage(SaveManager.imageDirectories[2], id.ToString(), fileType);
     }
 
 

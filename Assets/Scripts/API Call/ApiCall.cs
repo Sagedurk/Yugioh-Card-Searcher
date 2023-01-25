@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using UnityEditor.Build.Content;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -54,10 +56,27 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
     protected override void Awake()
     {
+        ApiCall instance = TryGetInstance();
+        if (instance)
+        {
+            instance.apiType = apiType;
+            instance.cardInfo = cardInfo;
+            instance.cardSearch = cardSearch;
+
+            if (instance.cardInfo)
+                instance.cardInfo.SetSubmitButtonListener();
+
+            if (instance.cardSearch)
+                instance.cardSearch.SetSubmitButtonListener();
+        }
+
         base.Awake();
 
+        if(Instance.cardInfo)
+            Instance.cardInfo.SetSubmitButtonListener();
 
     }
+
 
     public void Execute()
     {
@@ -381,39 +400,72 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
 
     #region Image Functions
-    public IEnumerator DownloadImages(string baseUrl, CardInfoParse card, bool overwriteData = false)
+
+    byte[] imageData;
+
+    public IEnumerator TryDownloadImages(string baseUrl, CardInfoParse card, bool overwriteData = false)
     {
-        Debug.Log("DOWNLOADING IMAGES");
-
-        string fileType = ".jpg";
-
         foreach (CardImageParse cardImage in card.card_images)
         {
             ImageData imageDataInstance = ImageData.TryGetImageData(cardImage.id);
 
-            //If all images exist and overwriting shouldn't happen, check next ID_LUT
-            if (!overwriteData && imageDataInstance != null)
+
+            if (!overwriteData && imageDataInstance != null && imageDataInstance.HasImages())
                 continue;
 
+            else if (imageDataInstance == null)
+                imageDataInstance = ImageData.CreateImageData(cardImage.id);
+            
 
 
-            //Download image data
-            UnityWebRequest imageRequestLarge = UnityWebRequestTexture.GetTexture(baseUrl + "cards/" + cardImage.id.ToString() + fileType);
-            UnityWebRequest imageRequestSmall = UnityWebRequestTexture.GetTexture(baseUrl + "cards_small/" + cardImage.id.ToString() + fileType);
-            UnityWebRequest imageRequestCropped = UnityWebRequestTexture.GetTexture(baseUrl + "cards_cropped/" + cardImage.id.ToString() + fileType);
-            yield return imageRequestLarge.SendWebRequest();
-            yield return imageRequestSmall.SendWebRequest();
-            yield return imageRequestCropped.SendWebRequest();
+            yield return TryDownloadImage(baseUrl + "cards/", ImageTypes.LARGE, imageDataInstance, overwriteData);
+            imageDataInstance.SetImage(ImageTypes.LARGE, imageData);
 
-            //Encode image data
-            byte[] largeTextureBytes = DownloadHandlerTexture.GetContent(imageRequestLarge).EncodeToJPG(100);
-            byte[] smallTextureBytes = DownloadHandlerTexture.GetContent(imageRequestSmall).EncodeToJPG(100);
-            byte[] croppedTextureBytes = DownloadHandlerTexture.GetContent(imageRequestCropped).EncodeToJPG(100);
+            yield return TryDownloadImage(baseUrl + "cards_small/", ImageTypes.SMALL, imageDataInstance, overwriteData);
+            imageDataInstance.SetImage(ImageTypes.SMALL, imageData);
 
+            yield return TryDownloadImage(baseUrl + "cards_cropped/", ImageTypes.CROPPED, imageDataInstance, overwriteData);
+            imageDataInstance.SetImage(ImageTypes.CROPPED, imageData);
+            
             //Save image data
-            ImageData.CreateImageData(cardImage.id, largeTextureBytes, smallTextureBytes, croppedTextureBytes);
+            imageDataInstance.SaveImages();
         }
     }
+
+
+    public IEnumerator TryDownloadImage(string url, ImageTypes imageType, ImageData instance, bool overwriteData = false)
+    {
+        if (!overwriteData)
+        {
+            switch (imageType)
+            {
+                case ImageTypes.LARGE:
+                    imageData = instance.GetLargeImage();
+                    break;
+
+                case ImageTypes.SMALL:
+                    imageData = instance.GetSmallImage();
+                    break;
+
+                case ImageTypes.CROPPED:
+                    imageData = instance.GetCroppedImage();
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (imageData != null)
+                yield break;
+        }
+
+        Debug.Log("DOWNLOAD IMAGE");
+        UnityWebRequest imageDownload = UnityWebRequestTexture.GetTexture(url + instance.id.ToString() + ImageData.fileType);
+        yield return imageDownload.SendWebRequest();
+
+        imageData = DownloadHandlerTexture.GetContent(imageDownload).EncodeToJPG(100);
+    }
+
     public void LoadImage(int id, RawImage img, ImageTypes imageType)
     {
         ImageData imageData = ImageData.TryGetImageData(id);
@@ -491,11 +543,11 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         if (cardInfo.parseSetList == null)
             yield break;
 
-        cardInfo.dropDownMenu.cardset.Clear();
-        cardInfo.dropDownMenu.cardset.Add(new Dropdown.OptionData(""));
+        cardSearch.dropDownMenu.cardset.Clear();
+        cardSearch.dropDownMenu.cardset.Add(new Dropdown.OptionData(""));
         for (int i = 0; i < cardInfo.parseSetList.Length; i++)
         {
-            cardInfo.dropDownMenu.cardset.Add(new Dropdown.OptionData(cardInfo.parseSetList[i].set_name));
+            cardSearch.dropDownMenu.cardset.Add(new Dropdown.OptionData(cardInfo.parseSetList[i].set_name));
         }
 
         if (req != null)
@@ -543,15 +595,15 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             cardInfo.parseArchList = JsonParser.FromJson<ArchetypeParse>(json);
         }
 
-        if (cardInfo.dropDownMenu != null)
+        if (cardSearch.dropDownMenu != null)
         {
-            cardInfo.dropDownMenu.archetype.Clear();
-            cardInfo.dropDownMenu.archetype.Add(new Dropdown.OptionData(""));
+            cardSearch.dropDownMenu.archetype.Clear();
+            cardSearch.dropDownMenu.archetype.Add(new Dropdown.OptionData(""));
         }
 
         for (int i = 0; i < cardInfo.parseArchList.Length; i++)
         {
-            cardInfo.dropDownMenu.archetype.Add(new Dropdown.OptionData(cardInfo.parseArchList[i].archetype_name));
+            cardSearch.dropDownMenu.archetype.Add(new Dropdown.OptionData(cardInfo.parseArchList[i].archetype_name));
         }
         if (req != null)
             req.downloadHandler.text.WriteStringToFile(SaveManager.rootDirectory, "archetypes", SaveManager.parameterFileType);

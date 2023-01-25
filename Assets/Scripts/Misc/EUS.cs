@@ -165,6 +165,7 @@ public static class EUS
     public static class Cat_Physics { }
     public static class Cat_Scene 
     {
+        public static SceneNames currentScene;
         public enum LoadType
         {
             /// <summary>
@@ -196,7 +197,7 @@ public static class EUS
                 return;
             }
 
-
+            currentScene = sceneToLoad;
             switch (loadType)
             {
 
@@ -266,7 +267,6 @@ public static class EUS
         }
 
 
-        
 
 
     }
@@ -305,6 +305,11 @@ public static class EUS
                 {
                     Destroy(gameObject);
                 }
+            }
+
+            protected T TryGetInstance()
+            {
+                return _instance;
             }
         }
 

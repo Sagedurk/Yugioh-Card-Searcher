@@ -22,8 +22,10 @@ public class ScaleHandler : MonoBehaviour
     
     void Start()
     {
+
+
         //set width of menubuttons
-        if (EUS.sceneIndex != 0)
+        if (EUS.Cat_Scene.currentScene != SceneNames.PRE_SETUP)
         {
             GameObject menu = GameObject.FindGameObjectWithTag("Canvas");
             GameObject[] menuButton = GameObject.FindGameObjectsWithTag("MenuButton");
@@ -35,18 +37,18 @@ public class ScaleHandler : MonoBehaviour
 
             }
         }
-        switch (EUS.sceneIndex)
+        switch (EUS.Cat_Scene.currentScene)
         {
-            case 1:
+            case SceneNames.CARD_INFO:
                 ScaleCardInfo();
                 break;
-            case 2:
+            case SceneNames.CARD_SEARCH:
                 ScaleCardSearch();
                 break;
-            case 3:
+            case SceneNames.RANDOM_CARD:
                 ScaleCardRandom();
                 break;
-            case 4:
+            case SceneNames.ARCHETYPE:
                 ScaleArchetype();
                 break;
             default:

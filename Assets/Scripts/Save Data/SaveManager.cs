@@ -229,7 +229,8 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
 
     public IEnumerator OverwriteID_LUTs(CardInfoParse card)
     {
-        yield return StartCoroutine(ApiCall.Instance.DownloadImages(ApiCall.imageURL, card));
+        yield return null;
+        //yield return StartCoroutine(ApiCall.Instance.TryDownloadImages(ApiCall.imageURL, card));
     }
 
     public IEnumerator OverwriteID_LUTs(CardInfoParse[] cards)
@@ -545,10 +546,9 @@ public static class SaveManagerExtensions
 
     public static void SaveImage(this byte[] imageBytes, string directory, string fileName, string fileType, bool isOverwriting = false)
     {
-
         //Check if File exists, and if it does, if it should be overwritten
         string fullPath = directory + fileName.ToLower() + fileType;
-
+        
         if (!isOverwriting && File.Exists(fullPath))
             return;
 

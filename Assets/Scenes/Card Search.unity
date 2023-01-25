@@ -574,24 +574,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 95179697}
   m_CullTransparentMesh: 0
---- !u!1 &104524040 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7835018932712375384, guid: 6680ba69ab17ef94599d1bb55aeb76a5,
-    type: 3}
-  m_PrefabInstance: {fileID: 1515846324}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &104524041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 104524040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b1483494e9055044a01a2fe0036c0bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &134001239
 GameObject:
   m_ObjectHideFlags: 0
@@ -675,7 +657,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1903723846}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ApiCall, Assembly-CSharp
         m_MethodName: Execute
         m_Mode: 1
@@ -2773,6 +2755,85 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1001370507}
   m_CullTransparentMesh: 0
+--- !u!1001 &1006700162
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1899456862017625318, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1899456862017625318, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1899456862017625318, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1899456862017625318, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1899456862017625318, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1899456862017625318, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1899456862017625318, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1899456862017625318, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1899456862017625318, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1899456862017625318, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1899456862017625318, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4420448312638998796, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: m_Name
+      value: ApiCall
+      objectReference: {fileID: 0}
+    - target: {fileID: 4588869496264885358, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: apiType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4588869496264885358, guid: 276c708b9ee100f42bb912ebfcf2f76d,
+        type: 3}
+      propertyPath: cardSearch
+      value: 
+      objectReference: {fileID: 1903723847}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 276c708b9ee100f42bb912ebfcf2f76d, type: 3}
 --- !u!1 &1071634356
 GameObject:
   m_ObjectHideFlags: 0
@@ -3555,18 +3616,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1515846324}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1515846326 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5449043550886807509, guid: 6680ba69ab17ef94599d1bb55aeb76a5,
-    type: 3}
-  m_PrefabInstance: {fileID: 1515846324}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 104524040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 666b51fb529d2b14ebccae0e2bc74765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1622788801
 GameObject:
   m_ObjectHideFlags: 0
@@ -4289,7 +4338,6 @@ GameObject:
   - component: {fileID: 1903723843}
   - component: {fileID: 1903723842}
   - component: {fileID: 1903723845}
-  - component: {fileID: 1903723846}
   - component: {fileID: 1903723847}
   m_Layer: 0
   m_Name: Card Handler
@@ -4324,13 +4372,13 @@ MonoBehaviour:
   idInput: {fileID: 1307128882}
   image: {fileID: 0}
   cardInfoTransform: {fileID: 1204103019}
-  dropDownMenu: {fileID: 936014858}
   scaleHandler: {fileID: 2137960459}
   fetchedCards: []
   parseArchList: []
   parseSetList: []
   artworkButtons: {fileID: 0}
   cardSetContainer: {fileID: 0}
+  submitButton: {fileID: 0}
   imageIndex: 0
   cardIDParsingResult: 0
   nextImage: {fileID: 0}
@@ -4381,28 +4429,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99baa89c10de50a459d74ee3a2de1d99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1903723846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1903723841}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8f99691bac6c0540b697fcd08c756c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardInfo: {fileID: 1903723843}
-  cardSearch: {fileID: 1903723847}
-  saveManager: {fileID: 1515846326}
-  apiType: 1
-  loadType: 0
-  dropdownUrlMod: 
-  cardID: 
-  jsonSaveData: 
-  fileName: 
-  nameUrlMod: 
 --- !u!114 &1903723847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4417,6 +4443,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scaleHandler: {fileID: 2137960459}
   cardSearchTransform: {fileID: 1204103019}
+  dropDownMenu: {fileID: 936014858}
+  submitButton: {fileID: 134001241}
   prefabHeight: 0
   fetchedCards: []
 --- !u!1 &1968195857
@@ -4985,7 +5013,7 @@ PrefabInstance:
         type: 3}
       propertyPath: saveManager
       value: 
-      objectReference: {fileID: 1515846326}
+      objectReference: {fileID: 0}
     - target: {fileID: 7598081242966257380, guid: e92acb678eb1c514a9b98cfab42250fd,
         type: 3}
       propertyPath: m_SizeDelta.y

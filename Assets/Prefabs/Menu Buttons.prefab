@@ -354,6 +354,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7835018932712375385}
+  - component: {fileID: 7128156667396087084}
   m_Layer: 5
   m_Name: Menu Buttons
   m_TagString: MenuButtons
@@ -384,6 +385,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 20}
   m_SizeDelta: {x: -30, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &7128156667396087084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7835018932712375384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efd8b26dffcd1db4686db6562b7afef3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loadCardInfoButton: {fileID: 7835018933891203874}
+  loadCardSearchButton: {fileID: 7835018932380466109}
+  loadRandomButton: {fileID: 7835018932352947484}
+  loadArchetypeButton: {fileID: 7835018933134060944}
 --- !u!1 &7835018933134060946
 GameObject:
   m_ObjectHideFlags: 0
@@ -879,15 +896,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 7835018932712375384}
         m_TargetAssemblyTypeName: 
-        m_MethodName: LoadSceneBtn
-        m_Mode: 3
+        m_MethodName: 
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 1
+        m_CallState: 2

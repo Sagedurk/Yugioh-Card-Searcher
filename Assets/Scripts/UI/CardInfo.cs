@@ -10,8 +10,6 @@ using Unity.Collections;
 using UnityEngine.Networking;
 using static ApiCall;
 using static RectTransformExt;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography;
 using UnityEngine.UIElements;
 using Button = UnityEngine.UI.Button;
 //using UnityEditor.PackageManager.Requests;
@@ -32,13 +30,13 @@ public class CardInfo : MonoBehaviour
     [HideInInspector] public Text idInput;
     public RawImage image;
     public RectTransform cardInfoTransform;
-    public DropdownHandler dropDownMenu;
     public ScaleHandler scaleHandler;
     public CardInfoParse[] fetchedCards;
     public ArchetypeParse[] parseArchList;
     public CardSetInfo[] parseSetList;
     public GameObject artworkButtons;
     public RectTransform cardSetContainer;
+    [SerializeField] Button submitButton;
 
     public int imageIndex, cardIDParsingResult;
 
@@ -236,8 +234,8 @@ public class CardInfo : MonoBehaviour
     {
        
         #region Set Image
-        if (ApiCall.Instance.loadType == LoadTypes.API)
-            yield return StartCoroutine(ApiCall.Instance.DownloadImages(ApiCall.imageURL, card));
+        //if (ApiCall.Instance.loadType == LoadTypes.API)
+            yield return StartCoroutine(ApiCall.Instance.TryDownloadImages(ApiCall.imageURL, card));
 
         ApiCall.Instance.LoadImage(card.card_images[imageIndex].id, image, ApiCall.ImageTypes.LARGE);
         artworkButtons.SetActive(true);
@@ -358,5 +356,9 @@ public class CardInfo : MonoBehaviour
 
     #endregion
 
-
+    public void SetSubmitButtonListener()
+    {
+        submitButton.onClick.RemoveAllListeners();
+        submitButton.onClick.AddListener(() => ApiCall.Instance.Execute());
+    }
 }
