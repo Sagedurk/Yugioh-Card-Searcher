@@ -27,9 +27,9 @@ public class CardSearch : MonoBehaviour
 
             prefab = Instantiate(Resources.Load<GameObject>("Prefabs/Search Result"), cardSearchTransform);
             RectTransform prefabRT = prefab.GetComponent<RectTransform>();
-            prefabRT.sizeDelta = new Vector2(0, scaleHandler.scrollField.sizeDelta.y / 20);   //Make X entries fit on screen at the same time (Make 1 entry 1/20 of the viewport height)
+            //prefabRT.sizeDelta = new Vector2(0, scaleHandler.scrollField.sizeDelta.y / 20);   //Make X entries fit on screen at the same time (Make 1 entry 1/20 of the viewport height)
             prefabRT.anchoredPosition = new Vector2(0, prefabHeight);
-            prefab.GetComponent<Text>().fontSize = scaleHandler.fontSize;
+            //prefab.GetComponent<Text>().fontSize = scaleHandler.fontSize;
             prefab.GetComponentInChildren<Text>().text = card.name;
 
             ApiCall.Instance.LoadImage(card.id, prefab.transform.GetChild(1).GetComponent<RawImage>(), ImageTypes.SMALL);
@@ -40,7 +40,7 @@ public class CardSearch : MonoBehaviour
             btn.name = card.name;
             rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, -(prefabRT.sizeDelta.y * 0.025f));
             rect.sizeDelta = new Vector2(scaleHandler.canvas.sizeDelta.x * 0.25f, prefabRT.sizeDelta.y * 0.95f);
-            btn.GetComponentInChildren<Text>().fontSize = scaleHandler.fontSize;
+            //btn.GetComponentInChildren<Text>().fontSize = scaleHandler.fontSize;
 
             //StartCoroutine(SetImage2("https://storage.googleapis.com/ygoprodeck.com/pics_small/" + parseList[i].id.ToString() + ".jpg", parseList[i].id, btn.GetComponent<CanvasRenderer>()));
 

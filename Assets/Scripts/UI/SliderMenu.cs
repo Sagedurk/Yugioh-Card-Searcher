@@ -7,6 +7,7 @@ public class SliderMenu : MonoBehaviour
 {
     public Canvas canvas;
     public RectTransform menuTransform;
+    public RectTransform menuButtons;
     public RectTransform viewPort;
     public Button returnButton;
     public ScaleHandler scaleManager;
@@ -57,7 +58,7 @@ public class SliderMenu : MonoBehaviour
     {
         if (!widen)
         {
-            viewPort.sizeDelta = new Vector2(-canvas.GetComponent<RectTransform>().sizeDelta.x + 15, -scaleManager.menu.sizeDelta.y);
+            viewPort.sizeDelta = new Vector2(-canvas.GetComponent<RectTransform>().sizeDelta.x + 15, -menuButtons.sizeDelta.y);
             viewPort.anchoredPosition = new Vector2(0, 0);
         }
         else

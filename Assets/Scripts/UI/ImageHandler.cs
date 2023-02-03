@@ -19,6 +19,8 @@ public class ImageHandler : MonoBehaviour
     float imageMult = 0.95f;
     bool imageScaled = false;
 
+    Vector2 minAnchor, maxAnchor;
+
     void Start()
     {
         rectTransform = card.image.gameObject.GetComponent<RectTransform>();
@@ -37,6 +39,9 @@ public class ImageHandler : MonoBehaviour
         {
             if (!imageScaled)
             {
+                minAnchor = rectTransform.anchorMin; 
+                maxAnchor = rectTransform.anchorMax;
+
                 // If X < Y in Aspect Ratio X:Y     (Tall Aspect Ratios)
                 if (((canvasTransform.sizeDelta.x * imageMult) * 1.46f) < canvasTransform.sizeDelta.y) { 
                     rectTransform.sizeDelta = new Vector2(canvasTransform.sizeDelta.x * imageMult, (canvasTransform.sizeDelta.x * imageMult) * 1.46f);
@@ -63,8 +68,8 @@ public class ImageHandler : MonoBehaviour
                 //Scales card image back to the original size
                 background.sizeDelta = new Vector2(0, 0);
                 rectTransform.sizeDelta = new Vector2(origHeight/1.46f, origHeight);
-                rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-                rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                rectTransform.anchorMin = minAnchor;
+                rectTransform.anchorMax = maxAnchor;
                 rectTransform.pivot = new Vector2(0.5f, 1);
                 rectTransform.anchoredPosition = new Vector2(origPosX, origPosY);
                 imageScaled = false;

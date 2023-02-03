@@ -18,19 +18,15 @@ using Button = UnityEngine.UI.Button;
 //Handles card information and API requests
 public class CardInfo : MonoBehaviour
 {
+    GameObject prefab;
+    [SerializeField] RectTransform viewport;
+    [SerializeField] RectTransform menuButtons;
 
-    public const string URL = "db.ygoprodeck.com/api/", databaseVersion = "v7/", cInfo = "cardinfo.php?";
-
- 
-    public UnityWebRequest webRequest;
-    [HideInInspector]public GameObject prefab;
-    [HideInInspector]public float prefabHeight = 0;
     [Space(30)]
     public InputField idInputField;
     [HideInInspector] public Text idInput;
     public RawImage image;
     public RectTransform cardInfoTransform;
-    public ScaleHandler scaleHandler;
     public CardInfoParse[] fetchedCards;
     public ArchetypeParse[] parseArchList;
     public CardSetInfo[] parseSetList;
@@ -116,18 +112,21 @@ public class CardInfo : MonoBehaviour
     #region Card Sets
     public void SpawnSets(CardInfoParse card, int j)
     {
-        float cardSetHeight = scaleHandler.menu.sizeDelta.y;
+        
+        float cardSetHeight = menuButtons.rect.height;
         string cardSetText = card.card_sets[j].set_name + ", \n" + card.card_sets[j].set_code + ", " + card.card_sets[j].set_rarity;
 
         prefab = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Card Set"), cardSetContainer.transform) as GameObject;
         RectTransform prefabTransform = prefab.GetComponent<RectTransform>();
-        prefabTransform.sizeDelta = new Vector2(0, scaleHandler.scrollField.sizeDelta.y / 10);   //Make 20 entries fit on screen at the same time (Make 1 entry 1/20 of the viewport height)
-        prefabTransform.anchoredPosition = new Vector2(0, -cardSetHeight * j);
-        prefab.GetComponent<Text>().fontSize = scaleHandler.fontSize;
+
+        prefabTransform.sizeDelta = new Vector2(0, viewport.rect.height / 20);   //Make 20 entries fit on screen at the same time (Make 1 entry 1/20 of the viewport height)
+        prefabTransform.anchoredPosition = new Vector2(0, -prefabTransform.sizeDelta.y * j);
+        prefab.GetComponent<Text>().fontSize = ScaleHandler.fontSize;
         prefab.GetComponentInChildren<Text>().text = cardSetText;
-        amountOfPrints.fontSize = scaleHandler.fontSize;
+        amountOfPrints.fontSize = ScaleHandler.fontSize;
         amountOfPrints.rectTransform.sizeDelta = new Vector2(cardSetHeight * 1.25f * 2.8916667f, cardSetHeight * 1.25f);
 
+        Debug.Log("Height: " + prefabTransform.sizeDelta.y );
     }
 
     public void ResetCardSetContainer()
@@ -256,16 +255,17 @@ public class CardInfo : MonoBehaviour
                 SpawnSets(card, j);
             }
 
-            RectTransform sceneMenuButtons = scaleHandler.menu;
-            Vector2 canvasSize = scaleHandler.canvas.sizeDelta;
+            Rect setSize = viewport.rect;
+            int amountOfSetsDisplayed = 20;
+            Vector2 canvasSize = ScaleHandler.GetCanvasSize();
 
-            cardSetContainer.SetSize(Directions2D.UP, card.card_sets.Length * sceneMenuButtons.sizeDelta.y);
+            cardSetContainer.SetSize(Directions2D.UP, card.card_sets.Length * setSize.height / amountOfSetsDisplayed);
 
             RectTransform scrollContainer = cardSetContainer.parent.GetComponent<RectTransform>();
 
-            scrollContainer.SetAnchoredPosition(Directions2D.DOWN, sceneMenuButtons.sizeDelta, 1.25f);
+            scrollContainer.SetAnchoredPosition(Directions2D.DOWN, setSize.size / amountOfSetsDisplayed, 1.25f);
             scrollContainer.SetSize(Directions2D.UP_RIGHT, canvasSize);
-            scrollContainer.AddSize(Directions2D.UP, (scrollContainer.anchoredPosition.y - sceneMenuButtons.sizeDelta.y));
+            scrollContainer.AddSize(Directions2D.UP, (scrollContainer.anchoredPosition.y - setSize.height / amountOfSetsDisplayed));
 
             amountOfPrints.SetText("Total amount of prints: " + card.card_sets.Length);
 
@@ -273,7 +273,7 @@ public class CardInfo : MonoBehaviour
             ShowCardSetButton(true);
 
             RectTransform closeButton = cardSetCloseBtn.GetComponent<RectTransform>();
-            closeButton.SetSize(Directions2D.UP_RIGHT, scaleHandler.menu.sizeDelta.y, 0.625f);
+            closeButton.SetSize(Directions2D.UP_RIGHT, setSize.height / amountOfSetsDisplayed, 0.625f);
             closeButton.SetAnchoredPosition(Directions2D.DOWN_RIGHT, closeButton.sizeDelta, 0.5f);
             #endregion
 
