@@ -13,7 +13,7 @@ public class CardInfoParse
     public string attribute;
     public string archetype;    //The archetype a card belongs to
     public int linkval; //Link Rating
-    public string[] linkMarkers;    //Link Arrows
+    public string[] linkmarkers;    //Link Arrows
     public int pendScale;   //Pendulum Scale
     public CardSetParse[] card_sets;
     public CardImageParse[] card_images;

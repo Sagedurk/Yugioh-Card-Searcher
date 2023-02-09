@@ -15,7 +15,6 @@ public class DropdownHandler : MonoBehaviour
 
     public Dropdown primaryDropdown;
     public Dropdown secondaryDropdown;
-    public DropValueViewport paramValuesViewport;
     [HideInInspector]public List<Dropdown.OptionData> cardtype, atk, def, lvl, type, attribute, linkrating, linkmarker, pendulumscale, cardset, archetype, banlist, format;
     [HideInInspector]public string[] urlParams = new string [19];
     [HideInInspector]public string urlMod;
@@ -322,7 +321,6 @@ public class DropdownHandler : MonoBehaviour
     void SetDropDownData(List<Dropdown.OptionData> optionList, string urlModifier, int index)
     {
         GetParamData(optionList, urlModifier, SaveManager.Instance.parameterIndices[index - 1]);
-        paramValuesViewport.amountOfItems = optionList.Count;
     }
 
     public void GetParamData(List<Dropdown.OptionData> option, string urlModifier, string parameterIndex)

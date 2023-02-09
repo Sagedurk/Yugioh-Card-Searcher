@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 public class CardSearch : MonoBehaviour
 {
+    public InputField idInputField;
+    [HideInInspector] public Text idInput;
+
     GameObject prefab;
     public ScaleHandler scaleHandler;
     public RectTransform cardSearchTransform;
@@ -14,6 +17,11 @@ public class CardSearch : MonoBehaviour
     [SerializeField] Button submitButton;
     [HideInInspector] public float prefabHeight = 0;
     [HideInInspector] public CardInfoParse[] fetchedCards;
+
+    private void Start()
+    {
+        idInput = idInputField.textComponent;
+    }
 
 
     public void ConvertData(CardInfoParse[] cards)

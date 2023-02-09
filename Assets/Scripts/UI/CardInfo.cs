@@ -22,7 +22,17 @@ public class CardInfo : MonoBehaviour
     [SerializeField] RectTransform viewport;
     [SerializeField] RectTransform menuButtons;
 
-    [Space(30)]
+    [Header("Artwork Buttons")]
+    public Button previousImageButton;
+    public Button nextImageButton;
+
+    [Header("Card Set")]
+    public RectTransform cardSetContainer;
+    public Button  showCardSets, cardSetCloseBtn;
+    public TextExtension amountOfPrints;
+
+
+    [Space(15)]
     public InputField idInputField;
     [HideInInspector] public Text idInput;
     public RawImage image;
@@ -30,15 +40,11 @@ public class CardInfo : MonoBehaviour
     public CardInfoParse[] fetchedCards;
     public ArchetypeParse[] parseArchList;
     public CardSetInfo[] parseSetList;
-    public GameObject artworkButtons;
-    public RectTransform cardSetContainer;
     [SerializeField] Button submitButton;
 
     public int imageIndex, cardIDParsingResult;
 
-    public Button nextImage, previousImage, showCardSets, cardSetCloseBtn;
-
-    public TextExtension errorText, id, cardName, cardType, monsterType, atk, def, level, attribute, pendulumScale, archetype, desc, amountOfPrints;
+    public TextExtension errorText, id, cardName, cardType, monsterType, atk, def, level, attribute, pendulumScale, archetype, desc;
 
     private void Awake()
     {
@@ -65,20 +71,35 @@ public class CardInfo : MonoBehaviour
     #region Visual Content
 
     #region Image
+    
+    #region Artwork Buttons
+
+    public void HideImageButtons()
+    {
+        previousImageButton.gameObject.SetActive(false);
+        nextImageButton.gameObject.SetActive(false);
+    }
+
+    public void ShowImageButtons()
+    {
+        previousImageButton.gameObject.SetActive(true);
+        nextImageButton.gameObject.SetActive(true);
+    }
+
     public void NextImage()
     {
         if (imageIndex < (fetchedCards[0].card_images.Length - 1))
         {
             imageIndex++;
             ApiCall.Instance.LoadImage(fetchedCards[0].card_images[imageIndex].id, image, ImageTypes.LARGE);
-            if (previousImage.interactable == false)
+            if (previousImageButton.interactable == false)
             {
-                previousImage.interactable = true;
+                previousImageButton.interactable = true;
             }
         }
         if (imageIndex >= (fetchedCards[0].card_images.Length - 1))
         {
-            nextImage.GetComponent<Button>().interactable = false;
+            nextImageButton.GetComponent<Button>().interactable = false;
         }
     }
 
@@ -86,25 +107,27 @@ public class CardInfo : MonoBehaviour
     {
         imageIndex--;
         ApiCall.Instance.LoadImage(fetchedCards[0].card_images[imageIndex].id, image, ImageTypes.LARGE);
-        if (nextImage.interactable == false)
+        if (nextImageButton.interactable == false)
         {
-            nextImage.interactable = true;
+            nextImageButton.interactable = true;
         }
         if (imageIndex == 0)
         {
-            previousImage.GetComponent<Button>().interactable = false;
+            previousImageButton.GetComponent<Button>().interactable = false;
         }
     }
+
+    #endregion
 
     public void ResetImageIndex()
     {
         imageIndex = 0;
 
-        if (nextImage != null)
-            nextImage.interactable = true;
+        if (nextImageButton != null)
+            nextImageButton.interactable = true;
 
-        if (previousImage != null)
-            previousImage.interactable = false;
+        if (previousImageButton != null)
+            previousImageButton.interactable = false;
     }
 
     #endregion
@@ -125,8 +148,6 @@ public class CardInfo : MonoBehaviour
         prefab.GetComponentInChildren<Text>().text = cardSetText;
         amountOfPrints.fontSize = ScaleHandler.fontSize;
         amountOfPrints.rectTransform.sizeDelta = new Vector2(cardSetHeight * 1.25f * 2.8916667f, cardSetHeight * 1.25f);
-
-        Debug.Log("Height: " + prefabTransform.sizeDelta.y );
     }
 
     public void ResetCardSetContainer()
@@ -139,10 +160,7 @@ public class CardInfo : MonoBehaviour
 
     #endregion
 
-    
 
-
-    
     public IEnumerator ResizeTransform()
     {
         yield return desc.rectTransform.sizeDelta.y;
@@ -237,7 +255,7 @@ public class CardInfo : MonoBehaviour
             yield return StartCoroutine(ApiCall.Instance.TryDownloadImages(ApiCall.imageURL, card));
 
         ApiCall.Instance.LoadImage(card.card_images[imageIndex].id, image, ApiCall.ImageTypes.LARGE);
-        artworkButtons.SetActive(true);
+        ShowImageButtons();
         #endregion
 
 
@@ -278,7 +296,7 @@ public class CardInfo : MonoBehaviour
             #endregion
 
             if (card.card_images.Length < 2)
-                nextImage.interactable = false;
+                nextImageButton.interactable = false;
 
         }
         else
@@ -307,15 +325,16 @@ public class CardInfo : MonoBehaviour
                 def.SetText("Link Rating: " + card.linkval.ToString());
                 //Add link markers to Card Info
                 string linkMarkers = "";
-                for (int j = 0; j < card.linkMarkers.Length; j++)
+
+                for (int j = 0; j < card.linkmarkers.Length; j++)
                 {
                     if (j != 0)
                     {
-                        linkMarkers += ", " + card.linkMarkers[j];
+                        linkMarkers += ", " + card.linkmarkers[j];
                     }
                     else
                     {
-                        linkMarkers += card.linkMarkers[j];
+                        linkMarkers += card.linkmarkers[j];
                     }
                 }
                 level.SetText("Link Markers: " + linkMarkers);

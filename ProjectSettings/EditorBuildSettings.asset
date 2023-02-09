@@ -10,7 +10,7 @@ EditorBuildSettings:
     guid: 27cc17b7fbeaf1b469dfb9a8ee0e5377
   - enabled: 1
     path: Assets/Scenes/Card Info.unity
-    guid: 00f117125fff5fc4a95b8de22b2519ce
+    guid: 8cfba4796e2ff3b4fac86daf246ef145
   - enabled: 1
     path: Assets/Scenes/Card Search.unity
     guid: 237ba439edaf18e46a6ada53f275915c

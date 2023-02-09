@@ -80,8 +80,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
     public void Execute()
     {
-        SetID();
 
+        SetID();
      
         //Needs to be redone to work with more than Card Info
         if (cardID == null)
@@ -91,12 +91,14 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         {
             case ApiTypes.CARD_INFO:
 
-                StartCoroutine(CardInfoExecute());
+                if(cardID != null)
+                    StartCoroutine(CardInfoExecute());
+
                 break;
 
             case ApiTypes.CARD_SEARCH:
 
-                CardSearchExecute();
+                    CardSearchExecute();
                 break;
 
             case ApiTypes.CARD_RANDOM:
@@ -194,7 +196,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             }
         }
             
-        cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.id, cardInfo.cardName, cardInfo.cardType, cardInfo.monsterType, cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute, cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc }, true);
+        //cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.id, cardInfo.cardName, cardInfo.cardType, cardInfo.monsterType, cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute, cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc }, true);
 
     }
 
@@ -250,7 +252,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         cardInfo.image.color = Vector4.zero;
         cardInfo.showCardSets.interactable = false;
         cardInfo.showCardSets.gameObject.SetActive(false);
-        cardInfo.artworkButtons.SetActive(false);
+        cardInfo.HideImageButtons();
     }
 
     void OnApiError(bool resetButtons)
@@ -266,17 +268,14 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
         loadType = LoadTypes.API;
 
-        if (cardInfo.errorText != null)
-        {
-            cardInfo.ClearTextInfo(cardInfo.errorText, resetButtons);
-        }
-
-
+       
         //Load data based on the API type set
         switch (apiType)
         {
             case ApiTypes.CARD_INFO:
-                
+                if (cardInfo.errorText != null)
+                    cardInfo.ClearTextInfo(cardInfo.errorText, resetButtons);
+
                 StartCoroutine(LoadCardInfo());
                 break;
             case ApiTypes.CARD_SEARCH:
@@ -335,7 +334,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
     public IEnumerator LoadCardSearch()
     {
-
+        Debug.Log("LOAD CARD SEARCH");
         #region Parse Data
         string jsonData = "";
 
@@ -373,10 +372,27 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
     }
 
     //TODO: Set Private?
+
     public void SetID()
     {
-        if (cardInfo.idInput != null)
-            cardID = cardInfo.idInput.text;
+        switch (apiType)
+        {
+            case ApiTypes.CARD_INFO:
+                if (cardInfo.idInput != null)
+                    cardID = cardInfo.idInput.text;
+                break;
+            case ApiTypes.CARD_SEARCH:
+                if (cardSearch.idInput != null)
+                    cardID = cardSearch.idInput.text;
+                break;
+            case ApiTypes.CARD_RANDOM:
+                if (cardInfo.idInput != null)
+                    cardID = cardInfo.idInput.text;
+                break;
+            default:
+                break;
+        }
+
     }
 
     #endregion
@@ -490,11 +506,11 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         texture.LoadImage(imageBytes);
         img.texture = texture;
         img.color = Color.white;
-        
-       
+
+
 
         if (apiType == ApiTypes.CARD_INFO || apiType == ApiTypes.CARD_RANDOM)
-            cardInfo.artworkButtons.SetActive(true);
+            cardInfo.ShowImageButtons();
     }
     #endregion
 
@@ -504,7 +520,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
     {
         yield return webRequest.SendWebRequest();
 
-        if (cardInfo.errorText != null)
+        if (cardInfo != null && cardInfo.errorText != null)
             cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.errorText });
         if (File.Exists(SaveManager.rootDirectory + "cardsets.txt"))
         {
