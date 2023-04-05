@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.IO;
 using System.Xml.Serialization;
+using System;
 
 
 //Handles Saving and Loading of data
@@ -14,15 +15,17 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
     public static string idLutFileType= ".txt"; 
     public static string imageFileType = ".jpg";
     public static string parameterFileType = ".txt";
+    public static string parameterValuesFileType = ".json";
 
     public static string rootDirectory;
     public static string cardDirectory;
     public static string[] imageDirectories;
     public static string idLutDirectory;
     public static string parameterDirectory;
+    public static string parameterValuesDirectory;
     
 
-    public DropdownHandler parameterDropdown;
+    
     public readonly string[] parameterIndices = new string[19];
 
     ApiCall apiCall;
@@ -93,7 +96,7 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
 
                 SetParameterIndices();
                 _cardInput = PlayerPrefs.GetString(Mod_Gen + cardInput);
-                apiCall.cardInfo.idInputField.text = _cardInput;
+                apiCall.cardSearch.idInputField.text = _cardInput;
                 apiCall.cardID = _cardInput;
                 LoadPrefs(Mod_Gen);
                 //LoadData();
@@ -175,7 +178,7 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
                 
                 PreSaveSearch();
                 _cardInput = apiCall.cardInfo.idInput.text;
-                PlayerPrefs.SetInt("parameterStartVal", parameterDropdown.primaryDropdown.value);
+                PlayerPrefs.SetInt("parameterStartVal", DropdownHandler.Instance.primaryDropdown.value);
                 PlayerPrefs.SetString(Mod_Gen + cardInput, _cardInput);
                 SetPrefs(Mod_Gen);
                 break;
@@ -256,10 +259,10 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
         return null;
     }
 
-    public static void SaveCard(CardInfoParse card)
+    public static void SaveCard(CardInfoParse card, bool isOverwriting = false)
     {
         string cardFileName = card.name.ConvertToValidFileName();
-        card.WriteClassToFile(cardDirectory, cardFileName, cardFileType);
+        card.TryWriteClassToFile(cardDirectory, cardFileName, cardFileType, isOverwriting);
     }
 
     #endregion
@@ -318,7 +321,7 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
             apiCall.cardInfo.desc.rectTransform.anchoredPosition = apiCall.cardInfo.archetype.rectTransform.anchoredPosition;
         apiCall.cardInfo.desc.rectTransform.anchoredPosition = apiCall.cardInfo.archetype.rectTransform.anchoredPosition - new Vector2(0, -apiCall.cardInfo.cardName.rectTransform.anchoredPosition.y);
     }
-    public string ReadFile(string directory, string fileName, string fileType)
+    public static string ReadFileAsString(string directory, string fileName, string fileType)
     {
         string fileContent = "";
         string fullPath = directory + fileName.ToLower() + fileType;
@@ -334,55 +337,64 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
 
     public static T[] ReadFile<T> (string directory, string fileName, string fileType)
     {
-        string jsonData = File.ReadAllText(directory + fileName.ToLower() + fileType);
+        try
+        {
+            string jsonData = File.ReadAllText(directory + fileName.ToLower() + fileType);
+            T[] convertedData = JsonParser.FromJson<T>(jsonData);
 
-        T[] convertedData = JsonParser.FromJson<T>(jsonData);
+            return convertedData;
 
-        return convertedData;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+
     }
 
     private IEnumerator LoadParameters()   //Load the card search parameters and their values 
     {
+        yield return null;
         for (int i = 1; i < parameterIndices.Length; i++)
         {
-            parameterDropdown.secondaryDropdown.ClearOptions();
-            parameterDropdown.primaryDropdown.value = i;
+            DropdownHandler.Instance.secondaryDropdown.ClearOptions();
+            DropdownHandler.Instance.primaryDropdown.value = i;
 
             if(i == 0)
             {
-                parameterDropdown.secondaryDropdown.GetComponent<Dropdown>().interactable = false;
+                DropdownHandler.Instance.secondaryDropdown.interactable = false;
                 continue;
             }
 
-            else if (i == 16)
-            {
-                yield return StartCoroutine(apiCall.GetCardSet());
-                parameterDropdown.OnChangePrimaryDropdown(i);
-                parameterDropdown.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i-1]);
-                //parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex15));
-                continue;
-            }
-            else if (i == 17)
-            {
-                yield return StartCoroutine(apiCall.GetArchetypes());
-                parameterDropdown.OnChangePrimaryDropdown(i);
-                parameterDropdown.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i - 1]);
-                //parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex16));
-                continue;
-            }
+            //else if (i == (int)DropdownHandler.DropOptions.CARD_SET)
+            //{
+            //    yield return StartCoroutine(apiCall.GetCardSet());
+            //    DropdownHandler.Instance.OnChangePrimaryDropdown(i);
+            //    DropdownHandler.Instance.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i - 1]);
+            //    //parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex15));
+            //    continue;
+            //}
+            //else if (i == (int)DropdownHandler.DropOptions.ARCHETYPE)
+            //{
+            //    yield return StartCoroutine(apiCall.GetArchetypes());
+            //    DropdownHandler.Instance.OnChangePrimaryDropdown(i);
+            //    DropdownHandler.Instance.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i - 1]);
+            //    //parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex16));
+            //    continue;
+            //}
 
-            parameterDropdown.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i-1]);
-            parameterDropdown.OnChangeSecondaryDropdown(PlayerPrefs.GetInt(parameterIndices[i - 1]));
+            DropdownHandler.Instance.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i-1]);
+            DropdownHandler.Instance.OnChangeSecondaryDropdown(PlayerPrefs.GetInt(parameterIndices[i - 1]));
 
         }
 
-        parameterDropdown.primaryDropdown.value = PlayerPrefs.GetInt("parameterStartVal");
+        DropdownHandler.Instance.primaryDropdown.value = PlayerPrefs.GetInt("parameterStartVal");
         
         if ( !string.IsNullOrWhiteSpace(_cardInput)|| !string.IsNullOrWhiteSpace(apiCall.dropdownUrlMod))
         {
             string fileNameCardID = apiCall.cardID.ConvertToValidFileName();
 
-            string fileContent = ReadFile(parameterDirectory,fileNameCardID + apiCall.dropdownUrlMod, parameterFileType);
+            string fileContent = ReadFileAsString(parameterDirectory,fileNameCardID + apiCall.dropdownUrlMod, parameterFileType);
 
             if (fileContent != "")
             {
@@ -407,6 +419,7 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
         SetIdLutDirectory();
         SetImageDirectory();
         SetParameterDirectory();
+        SetParameterValuesDirectory();
     }
 
     void SetRootDirectory()
@@ -438,6 +451,11 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
         parameterDirectory = rootDirectory + "Search/";
     }
 
+    void SetParameterValuesDirectory()
+    {
+        parameterValuesDirectory = rootDirectory + "Parameters/";
+    }
+
     void DebugDirectories()
     {
         Debug.Log("Root: " + rootDirectory);
@@ -463,6 +481,7 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
         }
 
         TryCreateDirectory(parameterDirectory);
+        TryCreateDirectory(parameterValuesDirectory);
     }
 
     void TryCreateDirectory(string directory)
@@ -512,30 +531,40 @@ public static class SaveManagerExtensions
 {
     static StreamWriter writer;
 
-    public static void WriteClassToFile<T>(this T content, string directory, string fileName, string fileType, bool isOverwriting = false)
+    public static void TryWriteClassToFile<T>(this T content, string directory, string fileName, string fileType, bool isOverwriting = false)
     {
-        //Check if File exists, and if it does, if it should be overwritten
         string fullPath = directory + fileName.ToLower() + fileType;
 
+        //Check if File exists, and if it does, if it should be overwritten
         if (!isOverwriting && File.Exists(fullPath))
             return;
 
         //Create/Overwrite File
         string convertedData = JsonParser.ToJson<T>(content);
 
-        writer = new StreamWriter(fullPath, false);
-        writer.Write(convertedData);
-        writer.Close();
+        try
+        {
+            using (StreamWriter writer = new StreamWriter(fullPath, false))
+            {
+                writer.Write(convertedData);
+                writer.Close();
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(string.Format("Error writing to file: {0}. {1}", fullPath, ex.Message));
+        }
     }
 
     public static void WriteStringToFile(this string content, string directory, string fileName, string fileType, bool isOverwriting = false)
     {
+
+        fileName = fileName.ConvertToValidFileName();
         //Check if File exists, and if it does, if it should be overwritten
         string fullPath = directory + fileName.ToLower() + fileType;
 
         if (!isOverwriting && File.Exists(fullPath))
             return;
-
 
         writer = new StreamWriter(fullPath, false);
         writer.Write(content);

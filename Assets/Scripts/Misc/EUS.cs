@@ -7,6 +7,9 @@ using UnityEngine.UI;
 using UnityEditor;
 using System.IO;
 using System.Text.RegularExpressions;
+using static DropdownHandler;
+using System.Xml.Serialization;
+using System;
 
 //Engine Utility System
 /* The idea with EUS is to be a smaller library of generally useful functions, which can be used across different projects
@@ -112,7 +115,7 @@ public static class EUS
             GameObject[] targets = GameObject.FindGameObjectsWithTag(tag);
             foreach (GameObject target in targets)
             {
-                Object.Destroy(target);
+                GameObject.Destroy(target);
             }
         }
 
@@ -156,8 +159,6 @@ public static class EUS
                 target.GetComponent<Canvas>().enabled = false;
             }
         }
-
-
 
 
     }
@@ -313,7 +314,7 @@ public static class EUS
             }
         }
 
-
+    #if UNITY_EDITOR
         [InitializeOnLoad]
         public class GenerateEnum
         {
@@ -434,7 +435,7 @@ public static class EUS
             #endregion
 
         }
-
+    #endif
 
     }
     
@@ -443,22 +444,24 @@ public static class EUS
 }
 public static class ExtensionMethods
 {
-    public static void CheckAndReplace(this string stringRef, string toReplace, string replaceTo)
+    #region String Manipulation
+    public static string CheckAndReplace(this string stringRef, string toReplace, string replaceTo)
     {
         if (stringRef.Contains(toReplace))
         {
             stringRef = stringRef.Replace(toReplace, replaceTo);
         }
+        return stringRef;
     }
 
     public static string ConvertToValidFileName(this string stringRef)
     {
         string returnString = stringRef;
-        returnString.CheckAndReplace(":", "_");
-        returnString.CheckAndReplace("/", "=");
-        returnString.CheckAndReplace("?", "ʔ");
-        returnString.CheckAndReplace("%", "¤");
-        returnString.CheckAndReplace("\"", "^");
+        returnString = returnString.CheckAndReplace(":", "_");
+        returnString = returnString.CheckAndReplace("/", "=");
+        returnString = returnString.CheckAndReplace("?", "ʔ");
+        returnString = returnString.CheckAndReplace("%", "¤");
+        returnString = returnString.CheckAndReplace("\"", "^");
 
         return returnString;
     }
@@ -474,4 +477,14 @@ public static class ExtensionMethods
         return returnString;
     }
 
+    #endregion
+
+    #region EventListeners
+    public static void OverrideOnValueChanged(this Dropdown dropdown, System.Action<int> callback)
+    {
+        dropdown.onValueChanged.RemoveAllListeners();
+        dropdown.onValueChanged.AddListener(delegate { callback(dropdown.value); });
+    }
+
+    #endregion
 }

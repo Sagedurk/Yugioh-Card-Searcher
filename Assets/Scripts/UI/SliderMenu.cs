@@ -10,7 +10,6 @@ public class SliderMenu : MonoBehaviour
     public RectTransform menuButtons;
     public RectTransform viewPort;
     public Button returnButton;
-    public ScaleHandler scaleManager;
     public float buttonAlphaValue;
     // Start is called before the first frame update
     void Start()
@@ -19,7 +18,7 @@ public class SliderMenu : MonoBehaviour
         menuTransform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(canvas.GetComponent<RectTransform>().sizeDelta.x * 0.5f, 0);
     }
 
-    public void AdjustPosition()
+    public void OnEndDrag()
     {
         if(menuTransform.anchoredPosition.x < menuTransform.sizeDelta.x/6)
         {
@@ -40,7 +39,7 @@ public class SliderMenu : MonoBehaviour
         
     }
 
-    public void ButtonAlpha()
+    public void OnDrag()
     {
         buttonAlphaValue = menuTransform.anchoredPosition.x / canvas.GetComponent<RectTransform>().sizeDelta.x;
         returnButton.image.color = new Color(0, 0, 0, buttonAlphaValue);
@@ -52,6 +51,7 @@ public class SliderMenu : MonoBehaviour
         returnButton.image.color = new Color(0, 0, 0, 0);
         returnButton.interactable = false;
         returnButton.image.raycastTarget = false;
+        ResizeViewport(false);
     }
 
     public void ResizeViewport(bool widen)

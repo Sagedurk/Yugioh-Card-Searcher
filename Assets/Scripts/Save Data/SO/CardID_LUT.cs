@@ -23,7 +23,7 @@ public class CardID_LUT
 
             instance.cardName = card.name;
 
-            instance.WriteClassToFile(SaveManager.idLutDirectory, image.id.ToString(), SaveManager.idLutFileType);
+            instance.TryWriteClassToFile(SaveManager.idLutDirectory, image.id.ToString(), SaveManager.idLutFileType);
         }
 
         return ID_LUTs;

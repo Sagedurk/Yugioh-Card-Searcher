@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5faa6182efdc5224ab880cae13e5b407, type: 3}
+  m_Name: M=S=T Type
+  m_EditorClassIdentifier: 
+  options:
+  - Aqua
+  - Beast
+  - Beast-Warrior
+  - Creator-God
+  - Cyberse
+  - Dinosaur
+  - Divine-Beast
+  - Dragon
+  - Fairy
+  - Fiend
+  - Fish
+  - Insect
+  - Machine
+  - Plant
+  - Psychic
+  - Pyro
+  - Reptile
+  - Rock
+  - Sea Serpent
+  - Spellcaster
+  - Thunder
+  - Warrior
+  - Winged Beast
+  - Normal
+  - Field
+  - Equip
+  - Continuous
+  - Quick-Play
+  - Ritual
+  - Counter

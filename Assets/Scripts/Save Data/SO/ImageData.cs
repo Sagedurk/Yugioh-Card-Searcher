@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.InteropServices.ComTypes;
-using UnityEditor.Build.Content;
 using UnityEngine;
 
 public class ImageData
@@ -103,9 +102,9 @@ public class ImageData
 
     public void SaveImages()
     {
-        imageLarge.SaveImage(SaveManager.imageDirectories[0], id.ToString(), fileType);
-        imageSmall.SaveImage(SaveManager.imageDirectories[1], id.ToString(), fileType);
-        imageCropped.SaveImage(SaveManager.imageDirectories[2], id.ToString(), fileType);
+        imageLarge?.SaveImage(SaveManager.imageDirectories[0], id.ToString(), fileType);
+        imageSmall?.SaveImage(SaveManager.imageDirectories[1], id.ToString(), fileType);
+        imageCropped?.SaveImage(SaveManager.imageDirectories[2], id.ToString(), fileType);
     }
 
 

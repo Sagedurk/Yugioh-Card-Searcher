@@ -38,8 +38,6 @@ public class CardInfo : MonoBehaviour
     public RawImage image;
     public RectTransform cardInfoTransform;
     public CardInfoParse[] fetchedCards;
-    public ArchetypeParse[] parseArchList;
-    public CardSetInfo[] parseSetList;
     [SerializeField] Button submitButton;
 
     public int imageIndex, cardIDParsingResult;

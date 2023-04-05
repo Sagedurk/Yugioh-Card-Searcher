@@ -11,11 +11,9 @@ public class CardSearch : MonoBehaviour
     [HideInInspector] public Text idInput;
 
     GameObject prefab;
-    public ScaleHandler scaleHandler;
     public RectTransform cardSearchTransform;
     public DropdownHandler dropDownMenu;
     [SerializeField] Button submitButton;
-    [HideInInspector] public float prefabHeight = 0;
     [HideInInspector] public CardInfoParse[] fetchedCards;
 
     private void Start()
@@ -24,9 +22,9 @@ public class CardSearch : MonoBehaviour
     }
 
 
-    public void ConvertData(CardInfoParse[] cards)
+    public IEnumerator ConvertData(CardInfoParse[] cards)
     {
-        
+        float prefabHeight = 0;
 
         for (int i = 0; i < cards.Length; i++)
         {
@@ -40,6 +38,7 @@ public class CardSearch : MonoBehaviour
             //prefab.GetComponent<Text>().fontSize = scaleHandler.fontSize;
             prefab.GetComponentInChildren<Text>().text = card.name;
 
+            yield return ApiCall.Instance.TryDownloadImages(ApiCall.imageURL, card);
             ApiCall.Instance.LoadImage(card.id, prefab.transform.GetChild(1).GetComponent<RawImage>(), ImageTypes.SMALL);
 
 
@@ -47,7 +46,7 @@ public class CardSearch : MonoBehaviour
             RectTransform rect = btn.GetComponent<RectTransform>();
             btn.name = card.name;
             rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, -(prefabRT.sizeDelta.y * 0.025f));
-            rect.sizeDelta = new Vector2(scaleHandler.canvas.sizeDelta.x * 0.25f, prefabRT.sizeDelta.y * 0.95f);
+            rect.sizeDelta = new Vector2(ScaleHandler.GetCanvasSize().x* 0.25f, prefabRT.sizeDelta.y * 0.95f);
             //btn.GetComponentInChildren<Text>().fontSize = scaleHandler.fontSize;
 
             //StartCoroutine(SetImage2("https://storage.googleapis.com/ygoprodeck.com/pics_small/" + parseList[i].id.ToString() + ".jpg", parseList[i].id, btn.GetComponent<CanvasRenderer>()));
@@ -86,11 +85,9 @@ public class CardSearch : MonoBehaviour
     }
 
 
-
     public void ResetPrefab()
     {
         EUS.Cat_Object_Manipulation.DestroyAll("PrefabSearch");
-        prefabHeight = 0;
     }
 
     public IEnumerator SetCardSearchHeight()

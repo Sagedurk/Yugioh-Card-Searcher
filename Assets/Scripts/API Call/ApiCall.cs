@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using UnityEditor.Build.Content;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -22,10 +23,11 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
     public UnityWebRequest webRequest;
 
+    public ArchetypeParse[] archetypes;
+    
 
-   
 
-    protected const string URL = "db.ygoprodeck.com/api/v7/", endpointCard = "cardinfo.php?", endpointArchetype = "archetypes.php";
+    protected const string URL = "db.ygoprodeck.com/api/v7/", endpointCard = "cardinfo.php?", endpointArchetype = "archetypes.php", endpointCardSet = "cardsets.php";
     public const string imageURL = "https://images.ygoprodeck.com/images/";
     [HideInInspector] public string dropdownUrlMod, cardID, jsonSaveData, fileName, nameUrlMod;
 
@@ -75,6 +77,9 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         if(Instance.cardInfo)
             Instance.cardInfo.SetSubmitButtonListener();
 
+
+        if (Instance.cardSearch)
+            Instance.cardSearch.SetSubmitButtonListener();
     }
 
 
@@ -173,10 +178,10 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         string fileNameCardID = cardID.ConvertToValidFileName();
        
         
-        string fileContent = SaveManager.Instance.ReadFile(SaveManager.parameterDirectory,fileNameCardID + dropdownUrlMod, SaveManager.parameterFileType);
+        string fileContent = SaveManager.ReadFileAsString(SaveManager.parameterDirectory,fileNameCardID + dropdownUrlMod, SaveManager.parameterFileType);
+        cardSearch.ResetPrefab();
 
         if (fileContent != ""){
-            cardSearch.ResetPrefab();
             cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.errorText }, true);
                 
             loadType = LoadTypes.FILE;
@@ -244,8 +249,6 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
     #region API Data Managing
     void OnApiNoDataFound(bool resetButtons)
     {
-        if(cardSearch)
-            cardSearch.ResetPrefab();
         cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.id, cardInfo.cardName, cardInfo.cardType, cardInfo.monsterType, cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute, cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc }, resetButtons);
         cardInfo.errorText.SetText("No matching card was found.");
 
@@ -257,7 +260,6 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
     void OnApiError(bool resetButtons)
     {
-        cardSearch.ResetPrefab();
         cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.id, cardInfo.cardName, cardInfo.cardType, cardInfo.monsterType, cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute, cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc }, resetButtons);
         cardInfo.errorText.SetText("An error has occurred.");
     }
@@ -280,7 +282,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
                 break;
             case ApiTypes.CARD_SEARCH:
                 
-                cardSearch.ResetPrefab();
+
                 StartCoroutine(LoadCardSearch());
                 break;
             case ApiTypes.CARD_RANDOM:
@@ -320,8 +322,6 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         }
 
         cardInfo.fetchedCards = JsonParser.FromJson<CardInfoParse>(jsonData);
-
-
         #endregion
 
         CardInfoParse card = cardInfo.fetchedCards[0];
@@ -334,7 +334,6 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
     public IEnumerator LoadCardSearch()
     {
-        Debug.Log("LOAD CARD SEARCH");
         #region Parse Data
         string jsonData = "";
 
@@ -354,7 +353,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         cardSearch.fetchedCards = JsonParser.FromJson<CardInfoParse>(jsonData);
         #endregion
 
-        cardSearch.ConvertData(cardSearch.fetchedCards);
+        SaveAPIData(cardSearch.fetchedCards);
+        StartCoroutine(cardSearch.ConvertData(cardSearch.fetchedCards));
 
     }
 
@@ -365,12 +365,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
 
 
-    public IEnumerator GetArchetypes()
-    {
-        webRequest = UnityWebRequest.Get(URL + endpointArchetype);
-        yield return StartCoroutine(ArchetypeRequest());
-    }
-
+    
     //TODO: Set Private?
 
     public void SetID()
@@ -433,15 +428,14 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
                 imageDataInstance = ImageData.CreateImageData(cardImage.id);
             
 
-
             yield return TryDownloadImage(baseUrl + "cards/", ImageTypes.LARGE, imageDataInstance, overwriteData);
             imageDataInstance.SetImage(ImageTypes.LARGE, imageData);
 
             yield return TryDownloadImage(baseUrl + "cards_small/", ImageTypes.SMALL, imageDataInstance, overwriteData);
             imageDataInstance.SetImage(ImageTypes.SMALL, imageData);
 
-            yield return TryDownloadImage(baseUrl + "cards_cropped/", ImageTypes.CROPPED, imageDataInstance, overwriteData);
-            imageDataInstance.SetImage(ImageTypes.CROPPED, imageData);
+            //yield return TryDownloadImage(baseUrl + "cards_cropped/", ImageTypes.CROPPED, imageDataInstance, overwriteData);
+            //imageDataInstance.SetImage(ImageTypes.CROPPED, imageData);
             
             //Save image data
             imageDataInstance.SaveImages();
@@ -449,7 +443,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
     }
 
 
-    public IEnumerator TryDownloadImage(string url, ImageTypes imageType, ImageData instance, bool overwriteData = false)
+    private IEnumerator TryDownloadImage(string url, ImageTypes imageType, ImageData instance, bool overwriteData = false)
     {
         if (!overwriteData)
         {
@@ -475,11 +469,18 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
                 yield break;
         }
 
-        Debug.Log("DOWNLOAD IMAGE");
+        Debug.LogFormat("Try Download type {0}", imageType);
         UnityWebRequest imageDownload = UnityWebRequestTexture.GetTexture(url + instance.id.ToString() + ImageData.fileType);
         yield return imageDownload.SendWebRequest();
 
-        imageData = DownloadHandlerTexture.GetContent(imageDownload).EncodeToJPG(100);
+        try
+        {
+            imageData = DownloadHandlerTexture.GetContent(imageDownload).EncodeToJPG(75);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarningFormat("Failed to download image type {0} for card ID {1}: \n{2}", imageType, instance.id, ex.Message);
+        }
     }
 
     public void LoadImage(int id, RawImage img, ImageTypes imageType)
@@ -514,151 +515,101 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
     }
     #endregion
 
+    public IEnumerator FetchAllCards( )
+    {
+        webRequest = UnityWebRequest.Get(URL + endpointCard);
+        yield return StartCoroutine(AllCardRequest());
+    }
+    public IEnumerator AllCardRequest()
+    {
+        yield return webRequest.SendWebRequest();
+        yield return webRequest.downloadHandler.text;
+
+
+        string jsonData = webRequest.downloadHandler.text;
+
+        CardInfoParse[] cardData = JsonParser.FromJson<CardInfoParse>(jsonData);
+
+        Debug.Log(cardData.Length + " cards in database");
+        foreach (CardInfoParse card in cardData)
+        {
+            SaveManager.CreateID_LUTs(card);
+            SaveManager.SaveCard(card);
+            yield return StartCoroutine(TryDownloadImages(imageURL, card));
+            //yield return null;
+            Debug.Log("Card Updated!");
+        }
+    }
+
+
+
 
     #region CardSets
     private IEnumerator CardSetRequest()
     {
         yield return webRequest.SendWebRequest();
+        yield return webRequest.downloadHandler.text;
 
-        if (cardInfo != null && cardInfo.errorText != null)
-            cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.errorText });
-        if (File.Exists(SaveManager.rootDirectory + "cardsets.txt"))
+        string json = "{\"data\":" + webRequest.downloadHandler.text + "}";
+        CardSetInfo[] cardSets = JsonParser.FromJson<CardSetInfo>(json);
+
+        string cardSetFilePath = "card set";
+
+        DropdownParameterParse[] dropdownData = SaveManager.ReadFile<DropdownParameterParse>(SaveManager.parameterValuesDirectory, cardSetFilePath, SaveManager.parameterValuesFileType);
+
+
+        dropdownData[0].options = new string[cardSets.Length];
+        for (int i = 0; i < cardSets.Length; i++)
         {
-            SaveManager.Instance.ReadFile(SaveManager.rootDirectory ,"cardsets", ".txt");
-            yield return StartCoroutine(LoadCardSetInfo(null, SaveManager.Instance.fileData));
+            dropdownData[0].options[i] = cardSets[i].set_name;
         }
-        else
-        {
-            yield return StartCoroutine(LoadCardSetInfo(webRequest));
-        }
+
+        dropdownData[0].TryWriteClassToFile(SaveManager.parameterValuesDirectory, cardSetFilePath, SaveManager.parameterValuesFileType, true);
     }
 
-    public IEnumerator GetCardSet()
+    public IEnumerator UpdateCardSets()
     {
-        webRequest = UnityWebRequest.Get("db.ygoprodeck.com/api/v7/cardsets.php");                  //Randomcard
+        webRequest = UnityWebRequest.Get(URL + endpointCardSet);                  //Randomcard
         yield return StartCoroutine(CardSetRequest());
     }
 
-    public IEnumerator LoadCardSetInfo(UnityWebRequest req = null, string cachedData = "")
-    {
-
-        string json;
-        if (req != null)
-        {
-            yield return req.downloadHandler.text;
-            json = "{ \"data\":" + req.downloadHandler.text + "}";
-            cardInfo.parseSetList = JsonParser.FromJson<CardSetInfo>(json);
-        }
-        else if (cachedData != "")
-        {
-            yield return cachedData;
-            json = "{ \"data\":" + cachedData + "}";
-            cardInfo.parseSetList = JsonParser.FromJson<CardSetInfo>(json);
-        }
-
-        if (cardInfo.parseSetList == null)
-            yield break;
-
-        cardSearch.dropDownMenu.cardset.Clear();
-        cardSearch.dropDownMenu.cardset.Add(new Dropdown.OptionData(""));
-        for (int i = 0; i < cardInfo.parseSetList.Length; i++)
-        {
-            cardSearch.dropDownMenu.cardset.Add(new Dropdown.OptionData(cardInfo.parseSetList[i].set_name));
-        }
-
-        if (req != null)
-        {
-            req.downloadHandler.text.WriteStringToFile(SaveManager.rootDirectory, "cardsets", SaveManager.parameterFileType);
-            //saveManager.WriteFile("cardsets", req.downloadHandler.text);
-        }
-    }
 
     #endregion
+
 
 
     #region Archetypes
+
+    public IEnumerator UpdateArchetypeList()
+    {
+        webRequest = UnityWebRequest.Get(URL + endpointArchetype);
+        yield return StartCoroutine(ArchetypeRequest());
+    }
+
     public IEnumerator ArchetypeRequest()
     {
         yield return webRequest.SendWebRequest();
+        yield return webRequest.downloadHandler.text;
 
-        if (cardInfo.errorText != null)
-            cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.errorText });
-        if (System.IO.File.Exists(SaveManager.rootDirectory + "archetypes.txt"))
-        {
-            SaveManager.Instance.ReadFile(SaveManager.rootDirectory, "archetypes", ".txt");
-            yield return StartCoroutine(LoadArchetypeInfo(null, SaveManager.Instance.fileData));
-        }
-        else
-        {
-            yield return StartCoroutine(LoadArchetypeInfo(webRequest));
-        }
-    }
+        string json = "{\"data\":" + webRequest.downloadHandler.text + "}";
+        archetypes = JsonParser.FromJson<ArchetypeParse>(json);
 
-    public IEnumerator LoadArchetypeInfo(UnityWebRequest req = null, string cachedData = "")
-    {
-        string json;
+        string archetypeFilePath = "archetype";
 
-        if (req != null)
+        DropdownParameterParse[] dropdownData = SaveManager.ReadFile<DropdownParameterParse>(SaveManager.parameterValuesDirectory, archetypeFilePath, SaveManager.parameterValuesFileType);
+
+
+        dropdownData[0].options = new string[archetypes.Length];
+        for (int i = 0; i < archetypes.Length; i++)
         {
-            yield return req.downloadHandler.text;
-            json = "{ \"data\":" + req.downloadHandler.text + "}";
-            cardInfo.parseArchList = JsonParser.FromJson<ArchetypeParse>(json);
-        }
-        else if (cachedData != "")
-        {
-            yield return cachedData;
-            json = "{ \"data\":" + cachedData + "}";
-            cardInfo.parseArchList = JsonParser.FromJson<ArchetypeParse>(json);
+            dropdownData[0].options[i] = archetypes[i].archetype_name;
         }
 
-        if (cardSearch.dropDownMenu != null)
-        {
-            cardSearch.dropDownMenu.archetype.Clear();
-            cardSearch.dropDownMenu.archetype.Add(new Dropdown.OptionData(""));
-        }
+        dropdownData[0].TryWriteClassToFile(SaveManager.parameterValuesDirectory, archetypeFilePath, SaveManager.parameterValuesFileType, true);
 
-        for (int i = 0; i < cardInfo.parseArchList.Length; i++)
-        {
-            cardSearch.dropDownMenu.archetype.Add(new Dropdown.OptionData(cardInfo.parseArchList[i].archetype_name));
-        }
-        if (req != null)
-            req.downloadHandler.text.WriteStringToFile(SaveManager.rootDirectory, "archetypes", SaveManager.parameterFileType);
-            //saveManager.WriteFile("archetypes", req.downloadHandler.text);
     }
 
     #endregion
-
-
-    #region MoveToAPI
-
-    
-
-
-    //Called by button
-    public void RequestCheck()
-    {
-        SetID();
-
-        if (cardID != "")
-        {
-            if (cardID != null)
-            {
-                //Card Information
-                if (EUS.sceneIndex == 2)
-                {
-                   
-                }
-            }
-        }
-       
-    }
-
-    
-
-    #endregion
-
-
-
 
 
 }
