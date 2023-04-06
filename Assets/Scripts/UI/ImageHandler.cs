@@ -14,10 +14,12 @@ public class ImageHandler: MonoBehaviour
 
     public void EnlargeImage()
     {
+        if (originalImage.texture == null)
+            return;
+
         background.gameObject.SetActive(true);
         originalImage.gameObject.SetActive(false);
-        enlargedImage.texture= originalImage.texture;
-
+        enlargedImage.texture = originalImage.texture;
     }
 
     public void ShrinkImage()

@@ -252,7 +252,9 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.id, cardInfo.cardName, cardInfo.cardType, cardInfo.monsterType, cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute, cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc }, resetButtons);
         cardInfo.errorText.SetText("No matching card was found.");
 
-        cardInfo.image.color = Vector4.zero;
+        cardInfo.image.color = Color.clear;
+        cardInfo.image.texture = null;
+
         cardInfo.showCardSets.interactable = false;
         cardInfo.showCardSets.gameObject.SetActive(false);
         cardInfo.HideImageButtons();
@@ -490,6 +492,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         if(imageData == null)
         {
             img.color = Color.clear;
+            img.texture = null;
             return;
         }
 
