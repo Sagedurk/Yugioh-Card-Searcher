@@ -498,19 +498,23 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
         byte[] imageBytes = null;
 
-        if (imageType == ImageTypes.LARGE)
+        switch (imageType)
+        {
+            case ImageTypes.LARGE:
             imageBytes = imageData.GetLargeImage();
-        else if (imageType == ImageTypes.SMALL)
+                break;
+            case ImageTypes.SMALL:
             imageBytes = imageData.GetSmallImage();
-        else if (imageType == ImageTypes.CROPPED)
+                break;
+            case ImageTypes.CROPPED:
             imageBytes = imageData.GetCroppedImage();
-
+                break;
+        }
 
         Texture2D texture = new Texture2D(1, 1);
         texture.LoadImage(imageBytes);
         img.texture = texture;
         img.color = Color.white;
-
 
 
         if (apiType == ApiTypes.CARD_INFO || apiType == ApiTypes.CARD_RANDOM)

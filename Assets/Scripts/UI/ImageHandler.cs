@@ -5,12 +5,18 @@ using UnityEngine.UI;
 
 //Handles the card image zoom
 //Move to ScaleHandler?
-public class ImageHandler: MonoBehaviour
+public class ImageHandler: EUS.Cat_Systems.Singleton<ImageHandler>
 {
 
     public RectTransform background;
     public RawImage enlargedImage;
     public RawImage originalImage;
+
+    protected override void Awake()
+    {
+        isDestroyable = true;
+        base.Awake();
+    }
 
     public void EnlargeImage()
     {
@@ -27,5 +33,6 @@ public class ImageHandler: MonoBehaviour
         originalImage.gameObject.SetActive(true);
         background.gameObject.SetActive(false);
     }
+
 
 }

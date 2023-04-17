@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using static DropdownHandler;
 using System.Xml.Serialization;
 using System;
+using UnityEngine.UIElements;
 
 //Engine Utility System
 /* The idea with EUS is to be a smaller library of generally useful functions, which can be used across different projects
@@ -271,10 +272,21 @@ public static class EUS
 
 
     }
+    public static class Cat_Math
+    {
+        public static bool IsDivisbleBy(int dividend, int divisor)
+        {
+            if (dividend % divisor == 0)
+                return true;
+
+            return false;
+        }
+    }
     public static class Cat_Systems
     {
         public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         {
+            protected static bool isDestroyable = true;
             private static T _instance;
             public static T Instance
             {
@@ -300,7 +312,9 @@ public static class EUS
                 if (_instance == null)
                 {
                     _instance = this as T;
-                    DontDestroyOnLoad(this);
+
+                    if(!isDestroyable)
+                        DontDestroyOnLoad(this);
                 }
                 else
                 {
@@ -477,6 +491,7 @@ public static class ExtensionMethods
         return returnString;
     }
 
+
     #endregion
 
     #region EventListeners
@@ -484,6 +499,22 @@ public static class ExtensionMethods
     {
         dropdown.onValueChanged.RemoveAllListeners();
         dropdown.onValueChanged.AddListener(delegate { callback(dropdown.value); });
+    }
+
+    public static void OverrideOnClick(this UnityEngine.UI.Button button, System.Action callback)
+    {
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(delegate { callback(); });
+    }
+
+    #endregion
+
+    #region Color
+
+    public static Color SetAlpha(this Color color, float newAlphaValue)
+    {
+        color = new Color(color.r, color.g, color.b, newAlphaValue);
+        return color;
     }
 
     #endregion
