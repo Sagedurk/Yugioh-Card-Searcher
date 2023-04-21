@@ -529,6 +529,9 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
     }
     public IEnumerator AllCardRequest()
     {
+        UpdateData.Instance.updateProgressText.text = "0%";
+        UpdateData.Instance.BlockUIInteraction();
+
         yield return webRequest.SendWebRequest();
         yield return webRequest.downloadHandler.text;
 
@@ -538,14 +541,24 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         CardInfoParse[] cardData = JsonParser.FromJson<CardInfoParse>(jsonData);
 
         Debug.Log(cardData.Length + " cards in database");
+
+        float percentageProgress = 0;
+        int cardsUpdated = 0;
+
         foreach (CardInfoParse card in cardData)
         {
             SaveManager.CreateID_LUTs(card);
             SaveManager.SaveCard(card);
             yield return StartCoroutine(TryDownloadImages(imageURL, card));
             //yield return null;
-            Debug.Log("Card Updated!");
+
+            percentageProgress = (float)cardsUpdated / cardData.Length * 100;
+            UpdateData.Instance.updateProgressText.text = percentageProgress.ToString("F0") + "%";
+
+            cardsUpdated++;
         }
+
+        UpdateData.Instance.UnblockUIInteraction();
     }
 
 
@@ -554,24 +567,35 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
     #region CardSets
     private IEnumerator CardSetRequest()
     {
+        UpdateData.Instance.updateProgressText.text = "0%";
+        UpdateData.Instance.BlockUIInteraction();
+
         yield return webRequest.SendWebRequest();
         yield return webRequest.downloadHandler.text;
 
         string json = "{\"data\":" + webRequest.downloadHandler.text + "}";
+        Debug.Log(json);
         CardSetInfo[] cardSets = JsonParser.FromJson<CardSetInfo>(json);
 
         string cardSetFilePath = "card set";
 
         DropdownParameterParse[] dropdownData = SaveManager.ReadFile<DropdownParameterParse>(SaveManager.parameterValuesDirectory, cardSetFilePath, SaveManager.parameterValuesFileType);
 
+        float percentageProgress = 0;
 
         dropdownData[0].options = new string[cardSets.Length];
         for (int i = 0; i < cardSets.Length; i++)
         {
             dropdownData[0].options[i] = cardSets[i].set_name;
+
+            percentageProgress = (float)i / cardSets.Length * 100;
+            UpdateData.Instance.updateProgressText.text = percentageProgress.ToString("F0") + "%";
+
+            yield return new WaitForSeconds(0.0025f);
         }
 
         dropdownData[0].TryWriteClassToFile(SaveManager.parameterValuesDirectory, cardSetFilePath, SaveManager.parameterValuesFileType, true);
+        UpdateData.Instance.UnblockUIInteraction();
     }
 
     public IEnumerator UpdateCardSets()
@@ -595,6 +619,9 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
     public IEnumerator ArchetypeRequest()
     {
+        UpdateData.Instance.updateProgressText.text = "0%";
+        UpdateData.Instance.BlockUIInteraction();
+
         yield return webRequest.SendWebRequest();
         yield return webRequest.downloadHandler.text;
 
@@ -605,15 +632,20 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
         DropdownParameterParse[] dropdownData = SaveManager.ReadFile<DropdownParameterParse>(SaveManager.parameterValuesDirectory, archetypeFilePath, SaveManager.parameterValuesFileType);
 
+        float percentageProgress = 0;
 
         dropdownData[0].options = new string[archetypes.Length];
         for (int i = 0; i < archetypes.Length; i++)
         {
             dropdownData[0].options[i] = archetypes[i].archetype_name;
+
+            percentageProgress = (float)i / archetypes.Length * 100;
+            UpdateData.Instance.updateProgressText.text = percentageProgress.ToString("F0") + "%";
+            yield return new WaitForSeconds(0.01f);
         }
 
         dropdownData[0].TryWriteClassToFile(SaveManager.parameterValuesDirectory, archetypeFilePath, SaveManager.parameterValuesFileType, true);
-
+        UpdateData.Instance.UnblockUIInteraction();
     }
 
     #endregion
