@@ -249,15 +249,20 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
     #region API Data Managing
     void OnApiNoDataFound(bool resetButtons)
     {
-        cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.id, cardInfo.cardName, cardInfo.cardType, cardInfo.monsterType, cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute, cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc }, resetButtons);
-        cardInfo.errorText.SetText("No matching card was found.");
+        if(cardInfo!= null)
+        {
 
-        cardInfo.image.color = Color.clear;
-        cardInfo.image.texture = null;
+            cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.id, cardInfo.cardName, cardInfo.cardType, cardInfo.monsterType, cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute, cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc }, resetButtons);
+            cardInfo.errorText.SetText("No matching card was found.");
 
-        cardInfo.showCardSets.interactable = false;
-        cardInfo.showCardSets.gameObject.SetActive(false);
-        cardInfo.HideImageButtons();
+            cardInfo.image.color = Color.clear;
+            cardInfo.image.texture = null;
+
+            cardInfo.showCardSets.interactable = false;
+            cardInfo.showCardSets.gameObject.SetActive(false);
+            cardInfo.HideImageButtons();
+        
+        }
     }
 
     void OnApiError(bool resetButtons)
@@ -513,13 +518,14 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
         Texture2D texture = new Texture2D(1, 1);
         texture.LoadImage(imageBytes);
+        
         img.texture = texture;
         img.color = Color.white;
 
-
-        if (apiType == ApiTypes.CARD_INFO || apiType == ApiTypes.CARD_RANDOM)
+        if (apiType != ApiTypes.CARD_SEARCH)
             cardInfo.ShowImageButtons();
     }
+
     #endregion
 
     public IEnumerator FetchAllCards( )

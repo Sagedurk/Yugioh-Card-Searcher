@@ -17,7 +17,7 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
 
     public Dropdown primaryDropdown;
     public Dropdown secondaryDropdown;
-    [HideInInspector] public string urlMod;
+    public Dropdown tertriaryDropdown;
     [HideInInspector] public DropOptions dropOptions;
 
     [HideInInspector] public List<ParameterInstance> parameterInstances = new List<ParameterInstance>();
@@ -26,9 +26,9 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
     private string[][] urlParamModifiers = new string[][]{ 
         new string[]{ "&type=" }, 
         new string[] { "&race=" }, 
-        new string[] { "&atk=", "&atk=lte", "&atk=gte" }, 
-        new string[] { "&def=", "&def=lte", "&def=gte" }, 
-        new string[] { "&level=", "&level=lte", "&level=gte" }, 
+        new string[] { "&atk=", "&atk=lt", "&atk=lte", "&atk=gt", "&atk=gte" }, 
+        new string[] { "&def=", "&def=lt", "&def=lte", "&def=gt", "&def=gte" }, 
+        new string[] { "&level=", "&level=lt", "&level=lte", "&level=gt", "&level=gte" }, 
         new string[] { "&attribute=" }, 
         new string[] { "&link=" }, 
         new string[] { "&linkmarker=" }, 
@@ -87,11 +87,11 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
 
         primaryDropdown.OverrideOnValueChanged(OnChangePrimaryDropdown);
         secondaryDropdown.OverrideOnValueChanged(OnChangeSecondaryDropdown);
+        tertriaryDropdown.OverrideOnValueChanged(OnChangeTertriaryDropdown);
 
         CreateParameterInstances();
 
         SetDropdownUI();
-        //Cardset & Archetype gets populated in [CardInfo] (~ line 460)
     }
 
     string ConvertEnumToString(DropOptions enumValue)
@@ -183,6 +183,7 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
     {
         secondaryDropdown.ClearOptions();
 
+
         if (index == 0)
         {
             secondaryDropdown.interactable = false;
@@ -192,10 +193,15 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
         if (!secondaryDropdown.interactable)
             secondaryDropdown.interactable = true;
 
-        SetDropDownData(parameterInstances[index-1], urlParamModifiers[index - 1][0], index);
+        string [] urlParamModifier = urlParamModifiers[index - 1];
+        ParameterInstance parameterInstance = parameterInstances[index - 1];
+
+        if (urlParamModifier.Length > 1)
+            tertriaryDropdown.gameObject.SetActive(true);
+        else
+            tertriaryDropdown.gameObject.SetActive(false);
         
-        if (secondaryDropdown.value == 0)
-            urlMod = "";
+        SetDropDownData(parameterInstance, urlParamModifier[0], index);
     }
 
     public void OnChangeSecondaryDropdown(int SecondaryDropdownIndex)
@@ -203,17 +209,45 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
         string value = secondaryDropdown.options[SecondaryDropdownIndex].text;
         int primaryDropdownIndex = primaryDropdown.value;
         ParameterInstance parameterInstance = parameterInstances[primaryDropdownIndex - 1];
-        string newUrlMod = urlParamModifiers[primaryDropdownIndex - 1][0];
+        string[] urlParamModifier = urlParamModifiers[primaryDropdownIndex - 1];
+        string newUrlMod = urlParamModifier[0];
+
+        if(urlParamModifier.Length > 1)
+            newUrlMod = urlParamModifier[tertriaryDropdown.value];
+        
 
         parameterInstance.optionIndex = SecondaryDropdownIndex;
         parameterInstance.urlModifier = "";
         
-        if (secondaryDropdown.value > 0)
+        if (SecondaryDropdownIndex > 0)
             parameterInstance.urlModifier = newUrlMod + value;
         
         PlayerPrefs.SetInt(SaveManager.Instance.parameterIndices[primaryDropdownIndex - 1], SecondaryDropdownIndex);
 
 
+        SetApiCallUrlMod();
+    }
+
+    public void OnChangeTertriaryDropdown(int index)
+    {
+        int primaryDropdownIndex = primaryDropdown.value;
+        ParameterInstance parameterInstance = parameterInstances[primaryDropdownIndex - 1];
+
+        string modifier = urlParamModifiers[primaryDropdownIndex - 1][index];
+        string value = secondaryDropdown.options[secondaryDropdown.value].text;
+
+        parameterInstance.urlModifier = "";
+
+        if(secondaryDropdown.value > 0)
+            parameterInstance.urlModifier = modifier + value;
+
+        SetApiCallUrlMod();
+    }
+
+    #endregion
+
+    void SetApiCallUrlMod()
+    {
         apiCall.dropdownUrlMod = "";
         foreach (ParameterInstance instance in parameterInstances)
         {
@@ -221,32 +255,18 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
         }
     }
 
-    #endregion
-
     void SetDropDownData(ParameterInstance parameterInstance, string urlModifier, int index)
     {
         secondaryDropdown.AddOptions(parameterInstance.optionList);
-        urlMod = urlModifier;
         parameterInstance.optionIndex = PlayerPrefs.GetInt(SaveManager.Instance.parameterIndices[index - 1]);
         secondaryDropdown.SetValueWithoutNotify(parameterInstance.optionIndex);
     }
 
 
-    public void SetParamData(string parameterIndex, int prefsValue, string setUrlMod)
-    {
-        urlMod = "";
-
-        if (secondaryDropdown.value > 0)
-            urlMod = setUrlMod;
-        
-        PlayerPrefs.SetInt(parameterIndex, prefsValue);
-    }
-
     public int GetDropOptionCount()
     {
         return Enum.GetValues(typeof(DropOptions)).Length;
     }
-
 
 
     public class ParameterInstance
