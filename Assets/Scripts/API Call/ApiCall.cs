@@ -24,8 +24,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
     public UnityWebRequest webRequest;
 
     public ArchetypeParse[] archetypes;
-    
 
+    Coroutine CardSearchResultsCoroutine;
 
     protected const string URL = "db.ygoprodeck.com/api/v7/", endpointCard = "cardinfo.php?", endpointArchetype = "archetypes.php", endpointCardSet = "cardsets.php";
     public const string imageURL = "https://images.ygoprodeck.com/images/";
@@ -176,9 +176,15 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
     private void CardSearchExecute()
     {
         string fileNameCardID = cardID.ConvertToValidFileName();
-       
-        
         string fileContent = SaveManager.ReadFileAsString(SaveManager.parameterDirectory,fileNameCardID + dropdownUrlMod, SaveManager.parameterFileType);
+
+        if(CardSearchResultsCoroutine != null)
+        {
+            StopCoroutine(CardSearchResultsCoroutine);
+            CardSearchResultsCoroutine = null;
+        }
+
+        
         cardSearch.ResetPrefab();
 
         if (fileContent != ""){
@@ -361,8 +367,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         #endregion
 
         SaveAPIData(cardSearch.fetchedCards);
-        StartCoroutine(cardSearch.ConvertData(cardSearch.fetchedCards));
-
+        CardSearchResultsCoroutine = StartCoroutine(cardSearch.ConvertData(cardSearch.fetchedCards));
     }
 
     #endregion

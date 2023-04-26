@@ -183,10 +183,11 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
     {
         secondaryDropdown.ClearOptions();
 
-
         if (index == 0)
         {
             secondaryDropdown.interactable = false;
+            tertriaryDropdown.gameObject.SetActive(false);
+
             return;
         }
 
@@ -195,6 +196,7 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
 
         string [] urlParamModifier = urlParamModifiers[index - 1];
         ParameterInstance parameterInstance = parameterInstances[index - 1];
+
 
         if (urlParamModifier.Length > 1)
             tertriaryDropdown.gameObject.SetActive(true);

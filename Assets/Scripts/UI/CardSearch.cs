@@ -37,21 +37,19 @@ public class CardSearch : MonoBehaviour
             if (EUS.Cat_Math.IsDivisbleBy(i, 2))
                 result.background.color = result.background.color.SetAlpha(0.5f);
 
+            PrefabRT.anchoredPosition = Vector2.up * prefabHeight;
+            
             result.cardName.text = card.name;
             result.imageID = card.id;
 
-            yield return ApiCall.Instance.TryDownloadImages(ApiCall.imageURL, card);
-            ApiCall.Instance.LoadImage(card.id, result.cardImage, ImageTypes.SMALL);
-
-            PrefabRT.anchoredPosition = Vector2.up * prefabHeight;
             cardSearchTransform.sizeDelta = new Vector2(cardSearchTransform.sizeDelta.x, (PrefabRT.sizeDelta.y - PrefabRT.anchoredPosition.y));
             prefabHeight -= PrefabRT.sizeDelta.y;
           
+            yield return ApiCall.Instance.TryDownloadImages(ApiCall.imageURL, card);
+            ApiCall.Instance.LoadImage(card.id, result.cardImage, ImageTypes.SMALL);
 
             if (ApiCall.Instance.loadType == LoadTypes.API)
-            {
                 SaveManager.SaveCard(card, true);
-            }
         }
     
         ApiCall.Instance.webRequest.downloadHandler.text.WriteStringToFile(SaveManager.parameterDirectory, ApiCall.Instance.dropdownUrlMod + " search", SaveManager.parameterFileType);
