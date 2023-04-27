@@ -30,10 +30,10 @@ public class DropdownLoader : MonoBehaviour
             if(parameterInstances[i].optionIndex != 0)
                 primaryDropdown.transform.GetChild(3).GetChild(0).GetChild(0).GetChild(i + 2).GetChild(0).GetComponent<Image>().color = color;
 
-            primaryDropdown.value = i;
+            //primaryDropdown.SetValueWithoutNotify(i);
         }
 
-        primaryDropdown.value = parameterValue;
+        //primaryDropdown.SetValueWithoutNotify(parameterValue);
     }
 
     void SetSecondaryDropdownValue(int index)

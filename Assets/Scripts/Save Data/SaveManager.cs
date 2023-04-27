@@ -354,6 +354,7 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
 
     private IEnumerator LoadParameters()   //Load the card search parameters and their values 
     {
+        yield break;
         yield return null;
         for (int i = 1; i < parameterIndices.Length; i++)
         {
@@ -366,22 +367,22 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
                 continue;
             }
 
-            //else if (i == (int)DropdownHandler.DropOptions.CARD_SET)
-            //{
-            //    yield return StartCoroutine(apiCall.GetCardSet());
-            //    DropdownHandler.Instance.OnChangePrimaryDropdown(i);
-            //    DropdownHandler.Instance.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i - 1]);
-            //    //parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex15));
-            //    continue;
-            //}
-            //else if (i == (int)DropdownHandler.DropOptions.ARCHETYPE)
-            //{
-            //    yield return StartCoroutine(apiCall.GetArchetypes());
-            //    DropdownHandler.Instance.OnChangePrimaryDropdown(i);
-            //    DropdownHandler.Instance.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i - 1]);
-            //    //parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex16));
-            //    continue;
-            //}
+                    //else if (i == (int)DropdownHandler.DropOptions.CARD_SET)
+                    //{
+                    //    yield return StartCoroutine(apiCall.GetCardSet());
+                    //    DropdownHandler.Instance.OnChangePrimaryDropdown(i);
+                    //    DropdownHandler.Instance.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i - 1]);
+                    //    //parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex15));
+                    //    continue;
+                    //}
+                    //else if (i == (int)DropdownHandler.DropOptions.ARCHETYPE)
+                    //{
+                    //    yield return StartCoroutine(apiCall.GetArchetypes());
+                    //    DropdownHandler.Instance.OnChangePrimaryDropdown(i);
+                    //    DropdownHandler.Instance.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i - 1]);
+                    //    //parameterDropdown.DropdownParamValues(PlayerPrefs.GetInt(paramIndex16));
+                    //    continue;
+                    //}
 
             DropdownHandler.Instance.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i-1]);
             DropdownHandler.Instance.OnChangeSecondaryDropdown(PlayerPrefs.GetInt(parameterIndices[i - 1]));

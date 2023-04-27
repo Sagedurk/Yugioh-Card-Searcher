@@ -121,12 +121,15 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
     void SetDropdownUI()
     {
         List<string> optionData = new List<string>();
+        List<Dropdown.OptionData> editorOptions = new List<Dropdown.OptionData>(primaryDropdown.options);
         foreach (ParameterInstance instance in parameterInstances)
         {
             if(instance != null)
                 optionData.Add(instance.instanceName);
         }
 
+        primaryDropdown.ClearOptions();
+        primaryDropdown.AddOptions(editorOptions);
         primaryDropdown.AddOptions(optionData);
     }
 
@@ -197,13 +200,15 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
         string [] urlParamModifier = urlParamModifiers[index - 1];
         ParameterInstance parameterInstance = parameterInstances[index - 1];
 
+        SetDropDownData(parameterInstance, urlParamModifier[0], index);
 
         if (urlParamModifier.Length > 1)
+        {
             tertriaryDropdown.gameObject.SetActive(true);
+            tertriaryDropdown.value = 0;
+        }
         else
             tertriaryDropdown.gameObject.SetActive(false);
-        
-        SetDropDownData(parameterInstance, urlParamModifier[0], index);
     }
 
     public void OnChangeSecondaryDropdown(int SecondaryDropdownIndex)
