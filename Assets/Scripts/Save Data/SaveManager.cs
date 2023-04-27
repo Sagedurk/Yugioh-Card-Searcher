@@ -178,7 +178,7 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
                 
                 PreSaveSearch();
                 _cardInput = apiCall.cardInfo.idInput.text;
-                PlayerPrefs.SetInt("parameterStartVal", DropdownHandler.Instance.primaryDropdown.value);
+                PlayerPrefs.SetInt("parameterStartVal", DropdownHandler.Instance.parameterDropdown.value);
                 PlayerPrefs.SetString(Mod_Gen + cardInput, _cardInput);
                 SetPrefs(Mod_Gen);
                 break;
@@ -358,12 +358,12 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
         yield return null;
         for (int i = 1; i < parameterIndices.Length; i++)
         {
-            DropdownHandler.Instance.secondaryDropdown.ClearOptions();
-            DropdownHandler.Instance.primaryDropdown.value = i;
+            DropdownHandler.Instance.parameterValueDropdown.ClearOptions();
+            DropdownHandler.Instance.parameterDropdown.value = i;
 
             if(i == 0)
             {
-                DropdownHandler.Instance.secondaryDropdown.interactable = false;
+                DropdownHandler.Instance.parameterValueDropdown.interactable = false;
                 continue;
             }
 
@@ -384,12 +384,12 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
                     //    continue;
                     //}
 
-            DropdownHandler.Instance.secondaryDropdown.value = PlayerPrefs.GetInt(parameterIndices[i-1]);
-            DropdownHandler.Instance.OnChangeSecondaryDropdown(PlayerPrefs.GetInt(parameterIndices[i - 1]));
+            DropdownHandler.Instance.parameterValueDropdown.value = PlayerPrefs.GetInt(parameterIndices[i-1]);
+            DropdownHandler.Instance.OnChangeParameterValueDropdown(PlayerPrefs.GetInt(parameterIndices[i - 1]));
 
         }
 
-        DropdownHandler.Instance.primaryDropdown.value = PlayerPrefs.GetInt("parameterStartVal");
+        DropdownHandler.Instance.parameterDropdown.value = PlayerPrefs.GetInt("parameterStartVal");
         
         if ( !string.IsNullOrWhiteSpace(_cardInput)|| !string.IsNullOrWhiteSpace(apiCall.dropdownUrlMod))
         {

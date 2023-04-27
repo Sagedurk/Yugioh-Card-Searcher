@@ -8,6 +8,7 @@ using System.Reflection;
 using UnityEditor;
 using System.Globalization;
 using static ApiCall;
+using static DropdownHandler;
 
 //Handles the dropdowns (filter parameters and their respective values)
 public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
@@ -15,9 +16,9 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
     #region Variables
 
 
-    public Dropdown primaryDropdown;
-    public Dropdown secondaryDropdown;
-    public Dropdown tertriaryDropdown;
+    public Dropdown parameterDropdown;
+    public Dropdown parameterValueDropdown;
+    public Dropdown comparisonOperatorDropdown;
     [HideInInspector] public DropOptions dropOptions;
 
     [HideInInspector] public List<ParameterInstance> parameterInstances = new List<ParameterInstance>();
@@ -77,17 +78,18 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
         DropdownHandler instance = TryGetInstance();
         if (instance)
         {
-            instance.primaryDropdown = primaryDropdown;
-            instance.secondaryDropdown = secondaryDropdown;
+            instance.parameterDropdown = parameterDropdown;
+            instance.parameterValueDropdown = parameterValueDropdown;
+            instance.comparisonOperatorDropdown = comparisonOperatorDropdown;
         }
 
         base.Awake();
 
         apiCall = ApiCall.Instance;
 
-        primaryDropdown.OverrideOnValueChanged(OnChangePrimaryDropdown);
-        secondaryDropdown.OverrideOnValueChanged(OnChangeSecondaryDropdown);
-        tertriaryDropdown.OverrideOnValueChanged(OnChangeTertriaryDropdown);
+        parameterDropdown.OverrideOnValueChanged(OnChangeParameterDropdown);
+        parameterValueDropdown.OverrideOnValueChanged(OnChangeParameterValueDropdown);
+        comparisonOperatorDropdown.OverrideOnValueChanged(OnChangeComparisonOperatorDropdown);
 
         CreateParameterInstances();
 
@@ -121,16 +123,16 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
     void SetDropdownUI()
     {
         List<string> optionData = new List<string>();
-        List<Dropdown.OptionData> editorOptions = new List<Dropdown.OptionData>(primaryDropdown.options);
+        List<Dropdown.OptionData> editorOptions = new List<Dropdown.OptionData>(parameterDropdown.options);
         foreach (ParameterInstance instance in parameterInstances)
         {
             if(instance != null)
                 optionData.Add(instance.instanceName);
         }
 
-        primaryDropdown.ClearOptions();
-        primaryDropdown.AddOptions(editorOptions);
-        primaryDropdown.AddOptions(optionData);
+        parameterDropdown.ClearOptions();
+        parameterDropdown.AddOptions(editorOptions);
+        parameterDropdown.AddOptions(optionData);
     }
 
 
@@ -182,20 +184,20 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
     #endregion
 
     #region Dropdowns
-    public void OnChangePrimaryDropdown(int index)
+    public void OnChangeParameterDropdown(int index)
     {
-        secondaryDropdown.ClearOptions();
+        parameterValueDropdown.ClearOptions();
 
         if (index == 0)
         {
-            secondaryDropdown.interactable = false;
-            tertriaryDropdown.gameObject.SetActive(false);
+            parameterValueDropdown.interactable = false;
+            comparisonOperatorDropdown.gameObject.SetActive(false);
 
             return;
         }
 
-        if (!secondaryDropdown.interactable)
-            secondaryDropdown.interactable = true;
+        if (!parameterValueDropdown.interactable)
+            parameterValueDropdown.interactable = true;
 
         string [] urlParamModifier = urlParamModifiers[index - 1];
         ParameterInstance parameterInstance = parameterInstances[index - 1];
@@ -204,30 +206,27 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
 
         if (urlParamModifier.Length > 1)
         {
-            tertriaryDropdown.gameObject.SetActive(true);
-            tertriaryDropdown.value = 0;
+            comparisonOperatorDropdown.gameObject.SetActive(true);
+            comparisonOperatorDropdown.value = parameterInstance.tertriaryIndex;
         }
         else
-            tertriaryDropdown.gameObject.SetActive(false);
+            comparisonOperatorDropdown.gameObject.SetActive(false);
     }
 
-    public void OnChangeSecondaryDropdown(int SecondaryDropdownIndex)
+    public void OnChangeParameterValueDropdown(int SecondaryDropdownIndex)
     {
-        string value = secondaryDropdown.options[SecondaryDropdownIndex].text;
-        int primaryDropdownIndex = primaryDropdown.value;
+        string value = parameterValueDropdown.options[SecondaryDropdownIndex].text;
+        int primaryDropdownIndex = parameterDropdown.value;
         ParameterInstance parameterInstance = parameterInstances[primaryDropdownIndex - 1];
         string[] urlParamModifier = urlParamModifiers[primaryDropdownIndex - 1];
         string newUrlMod = urlParamModifier[0];
 
         if(urlParamModifier.Length > 1)
-            newUrlMod = urlParamModifier[tertriaryDropdown.value];
+            newUrlMod = urlParamModifier[comparisonOperatorDropdown.value];
         
-
         parameterInstance.optionIndex = SecondaryDropdownIndex;
-        parameterInstance.urlModifier = "";
-        
-        if (SecondaryDropdownIndex > 0)
-            parameterInstance.urlModifier = newUrlMod + value;
+
+        parameterInstance.SetURLModifier(SecondaryDropdownIndex, newUrlMod, value);
         
         PlayerPrefs.SetInt(SaveManager.Instance.parameterIndices[primaryDropdownIndex - 1], SecondaryDropdownIndex);
 
@@ -235,18 +234,17 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
         SetApiCallUrlMod();
     }
 
-    public void OnChangeTertriaryDropdown(int index)
+    public void OnChangeComparisonOperatorDropdown(int index)
     {
-        int primaryDropdownIndex = primaryDropdown.value;
+        int primaryDropdownIndex = parameterDropdown.value;
         ParameterInstance parameterInstance = parameterInstances[primaryDropdownIndex - 1];
 
         string modifier = urlParamModifiers[primaryDropdownIndex - 1][index];
-        string value = secondaryDropdown.options[secondaryDropdown.value].text;
+        string value = parameterValueDropdown.options[parameterValueDropdown.value].text;
 
-        parameterInstance.urlModifier = "";
+        parameterInstance.tertriaryIndex = index;
 
-        if(secondaryDropdown.value > 0)
-            parameterInstance.urlModifier = modifier + value;
+        parameterInstance.SetURLModifier(parameterValueDropdown.value, modifier, value);
 
         SetApiCallUrlMod();
     }
@@ -264,9 +262,9 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
 
     void SetDropDownData(ParameterInstance parameterInstance, string urlModifier, int index)
     {
-        secondaryDropdown.AddOptions(parameterInstance.optionList);
+        parameterValueDropdown.AddOptions(parameterInstance.optionList);
         parameterInstance.optionIndex = PlayerPrefs.GetInt(SaveManager.Instance.parameterIndices[index - 1]);
-        secondaryDropdown.SetValueWithoutNotify(parameterInstance.optionIndex);
+        parameterValueDropdown.SetValueWithoutNotify(parameterInstance.optionIndex);
     }
 
 
@@ -282,6 +280,10 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
         public int optionIndex = 0;
         public List<Dropdown.OptionData> optionList = new List<Dropdown.OptionData>();
         public string urlModifier = "";
+        /// <summary>
+        /// Used to keep track of the tertriary dropdown value
+        /// </summary>
+        public int tertriaryIndex = 0;
 
         public ParameterInstance(string name, string[] options, Action OnCreate = null) 
         { 
@@ -299,6 +301,14 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
             {
                 listData.Add(new Dropdown.OptionData(optionName));
             }
+        }
+
+        public void SetURLModifier(int dropdownValue ,string modifier, string value)
+        {
+            urlModifier = "";
+
+            if (dropdownValue > 0)
+                urlModifier = modifier + value;
         }
     }
 

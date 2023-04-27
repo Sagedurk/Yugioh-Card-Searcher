@@ -13,8 +13,8 @@ public class DropdownLoader : MonoBehaviour
 
     private void Start()
     {
-        primaryDropdown = DropdownHandler.Instance.primaryDropdown;
-        secondaryDropdown = DropdownHandler.Instance.secondaryDropdown;
+        primaryDropdown = DropdownHandler.Instance.parameterDropdown;
+        secondaryDropdown = DropdownHandler.Instance.parameterValueDropdown;
 
         MarkPrimaryDropdownOptions();
     }
@@ -38,9 +38,9 @@ public class DropdownLoader : MonoBehaviour
 
     void SetSecondaryDropdownValue(int index)
     {
-        DropdownHandler.Instance.OnChangePrimaryDropdown(index);
+        DropdownHandler.Instance.OnChangeParameterDropdown(index);
         secondaryDropdown.value = PlayerPrefs.GetInt(SaveManager.Instance.parameterIndices[index - 1]);
-        DropdownHandler.Instance.OnChangeSecondaryDropdown(PlayerPrefs.GetInt(SaveManager.Instance.parameterIndices[index - 1]));
+        DropdownHandler.Instance.OnChangeParameterValueDropdown(PlayerPrefs.GetInt(SaveManager.Instance.parameterIndices[index - 1]));
     }
 
 }

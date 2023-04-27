@@ -5267,9 +5267,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6af7d796410402642be7becbbd73963c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  primaryDropdown: {fileID: 936014855}
-  secondaryDropdown: {fileID: 1763320904}
-  tertriaryDropdown: {fileID: 1924616098}
+  parameterDropdown: {fileID: 936014855}
+  parameterValueDropdown: {fileID: 1763320904}
+  comparisonOperatorDropdown: {fileID: 1924616098}
   dropOptions: 0
 --- !u!4 &1701667565
 Transform:
