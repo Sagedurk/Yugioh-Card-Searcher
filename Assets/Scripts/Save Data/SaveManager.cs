@@ -268,6 +268,16 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
     #endregion
 
 
+    #region SearchData
+
+    public static void SaveSearchData(string searchData, string fileName, bool isOverwriting = false)
+    {
+        string searchFileName = fileName.ConvertToValidFileName();
+        searchData.WriteStringToFile(parameterDirectory, searchFileName, parameterFileType, isOverwriting);
+    }
+
+    #endregion
+
     #endregion
 
     #region Loading

@@ -51,9 +51,6 @@ public class CardSearch : MonoBehaviour
             if (ApiCall.Instance.loadType == LoadTypes.API)
                 SaveManager.SaveCard(card, true);
         }
-    
-        ApiCall.Instance.webRequest.downloadHandler.text.WriteStringToFile(SaveManager.parameterDirectory, ApiCall.Instance.dropdownUrlMod + " search", SaveManager.parameterFileType);
-
     }
 
 

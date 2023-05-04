@@ -175,8 +175,10 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
     private void CardSearchExecute()
     {
-        string fileNameCardID = cardID.ConvertToValidFileName();
-        string fileContent = SaveManager.ReadFileAsString(SaveManager.parameterDirectory,fileNameCardID + dropdownUrlMod, SaveManager.parameterFileType);
+        string searchQuery = cardID.ConvertToValidFileName();
+        string fileName = searchQuery + dropdownUrlMod.ConvertToValidFileName();
+        string fileContent = SaveManager.ReadFileAsString(SaveManager.parameterDirectory, fileName, SaveManager.parameterFileType);
+
 
         if(CardSearchResultsCoroutine != null)
         {
@@ -184,12 +186,11 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             CardSearchResultsCoroutine = null;
         }
 
-        
         cardSearch.ResetPrefab();
 
         if (fileContent != ""){
-            cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.errorText }, true);
-                
+
+            SaveManager.Instance.fileData = fileContent;
             loadType = LoadTypes.FILE;
             StartCoroutine(LoadCardSearch());
         }
@@ -198,7 +199,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             if (!string.IsNullOrWhiteSpace(cardID) || !string.IsNullOrWhiteSpace(dropdownUrlMod))
             {
                 webRequest = UnityWebRequest.Get(URL + endpointCard + "fname=" + cardID + dropdownUrlMod);
-                Debug.Log(URL + endpointCard + "fname=" + cardID + dropdownUrlMod);
+                //Debug.Log(URL + endpointCard + "fname=" + cardID + dropdownUrlMod);
                 StartCoroutine(APIRequest());
             }
             else
@@ -206,8 +207,6 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
                 //Add errortext
             }
         }
-            
-        //cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.id, cardInfo.cardName, cardInfo.cardType, cardInfo.monsterType, cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute, cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc }, true);
 
     }
 
@@ -279,7 +278,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
     void OnApiSuccess(bool resetButtons)
     {
-        Debug.Log("API Success!");
+        //Debug.Log("API Success!");
 
         loadType = LoadTypes.API;
 
@@ -355,6 +354,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             case LoadTypes.API:
                 yield return webRequest.downloadHandler.text;
                 jsonData = webRequest.downloadHandler.text;
+
+                SaveManager.SaveSearchData(jsonData, cardID + dropdownUrlMod);
                 break;
 
             case LoadTypes.FILE:
@@ -365,8 +366,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
         cardSearch.fetchedCards = JsonParser.FromJson<CardInfoParse>(jsonData);
         #endregion
-
-        SaveAPIData(cardSearch.fetchedCards);
+        
         CardSearchResultsCoroutine = StartCoroutine(cardSearch.ConvertData(cardSearch.fetchedCards));
     }
 
