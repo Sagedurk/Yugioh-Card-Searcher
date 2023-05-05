@@ -6,7 +6,6 @@ using UnityEditor;
 public class ParameterOptionSO : ScriptableObject
 {
     public string[] options;
-    //CHANGE TO FILE IO!!!
 
 #if UNITY_EDITOR
     [MenuItem("Assets/Create/Parameter Options")]

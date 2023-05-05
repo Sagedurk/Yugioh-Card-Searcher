@@ -127,7 +127,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         
         if (int.TryParse(cardID, out int id))
         {
-            CardID_LUT id_LUT = CardID_LUT.TryGetInstance(id);
+            CardID_LUT id_LUT = CardID_LUT.TryGetLUT(id);
             Debug.Log("LUT ATTEMPT");
 
             //Fetch card name from API if ID_LUT doesn't exist yet
@@ -558,10 +558,17 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
         foreach (CardInfoParse card in cardData)
         {
-            SaveManager.CreateID_LUTs(card);
-            SaveManager.SaveCard(card);
-            yield return StartCoroutine(TryDownloadImages(imageURL, card));
-            //yield return null;
+            if (CardID_LUT.TryGetLUT(card.id) == null)
+            {
+                cardsUpdated++;
+                continue;
+            }
+
+            Debug.Log("card Updated");
+
+            SaveManager.SaveCard(card, true);
+            //yield return StartCoroutine(TryDownloadImages(imageURL, card));
+            yield return new WaitForSeconds(0.0025f);
 
             percentageProgress = (float)cardsUpdated / cardData.Length * 100;
             UpdateData.Instance.updateProgressText.text = percentageProgress.ToString("F0") + "%";
@@ -585,19 +592,19 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         yield return webRequest.downloadHandler.text;
 
         string json = "{\"data\":" + webRequest.downloadHandler.text + "}";
-        Debug.Log(json);
+
         CardSetInfo[] cardSets = JsonParser.FromJson<CardSetInfo>(json);
 
         string cardSetFilePath = "card set";
 
-        DropdownParameterParse[] dropdownData = SaveManager.ReadFile<DropdownParameterParse>(SaveManager.parameterValuesDirectory, cardSetFilePath, SaveManager.parameterValuesFileType);
+        DropdownParameterParse dropdownData = new DropdownParameterParse().TryReadFileToClass(SaveManager.parameterValuesDirectory, cardSetFilePath, SaveManager.parameterValuesFileType);
 
         float percentageProgress = 0;
 
-        dropdownData[0].options = new string[cardSets.Length];
+        dropdownData.options = new string[cardSets.Length];
         for (int i = 0; i < cardSets.Length; i++)
         {
-            dropdownData[0].options[i] = cardSets[i].set_name;
+            dropdownData.options[i] = cardSets[i].set_name;
 
             percentageProgress = (float)i / cardSets.Length * 100;
             UpdateData.Instance.updateProgressText.text = percentageProgress.ToString("F0") + "%";
@@ -605,7 +612,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             yield return new WaitForSeconds(0.0025f);
         }
 
-        dropdownData[0].TryWriteClassToFile(SaveManager.parameterValuesDirectory, cardSetFilePath, SaveManager.parameterValuesFileType, true);
+        dropdownData.TryWriteClassToFile(SaveManager.parameterValuesDirectory, cardSetFilePath, SaveManager.parameterValuesFileType, true);
         UpdateData.Instance.UnblockUIInteraction();
     }
 
@@ -641,21 +648,21 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
         string archetypeFilePath = "archetype";
 
-        DropdownParameterParse[] dropdownData = SaveManager.ReadFile<DropdownParameterParse>(SaveManager.parameterValuesDirectory, archetypeFilePath, SaveManager.parameterValuesFileType);
+        DropdownParameterParse dropdownData = new DropdownParameterParse().TryReadFileToClass(SaveManager.parameterValuesDirectory, archetypeFilePath, SaveManager.parameterValuesFileType);
 
         float percentageProgress = 0;
 
-        dropdownData[0].options = new string[archetypes.Length];
+        dropdownData.options = new string[archetypes.Length];
         for (int i = 0; i < archetypes.Length; i++)
         {
-            dropdownData[0].options[i] = archetypes[i].archetype_name;
+            dropdownData.options[i] = archetypes[i].archetype_name;
 
             percentageProgress = (float)i / archetypes.Length * 100;
             UpdateData.Instance.updateProgressText.text = percentageProgress.ToString("F0") + "%";
             yield return new WaitForSeconds(0.01f);
         }
 
-        dropdownData[0].TryWriteClassToFile(SaveManager.parameterValuesDirectory, archetypeFilePath, SaveManager.parameterValuesFileType, true);
+        dropdownData.TryWriteClassToFile(SaveManager.parameterValuesDirectory, archetypeFilePath, SaveManager.parameterValuesFileType, true);
         UpdateData.Instance.UnblockUIInteraction();
     }
 

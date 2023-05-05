@@ -44,14 +44,17 @@ public class UpdateData: EUS.Cat_Systems.Singleton<UpdateData>
 
     public void BlockUIInteraction()
     {
-        Debug.Log("BLOCKED");
         blockBackground.gameObject.SetActive(true);
     }
     public void UnblockUIInteraction()
     {
-        Debug.Log("UNBLOCKED");
         blockBackground.gameObject.SetActive(false);
     }
+
+
+
+
+
 
     public IEnumerator APIrequest(bool resetButtons = true)
     {

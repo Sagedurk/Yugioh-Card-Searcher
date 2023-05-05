@@ -252,8 +252,8 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
     {
         if (File.Exists(cardDirectory + cardName + cardFileType))
         {
-            CardInfoParse[] loadedData = ReadFile<CardInfoParse>(cardDirectory, cardName, cardFileType);
-            return loadedData[0];
+            CardInfoParse loadedData = new CardInfoParse().TryReadFileToClass(cardDirectory, cardName, cardFileType);
+            return loadedData;
         }
 
         return null;
@@ -345,22 +345,22 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
 
     }
 
-    public static T[] ReadFile<T> (string directory, string fileName, string fileType)
-    {
-        try
-        {
-            string jsonData = File.ReadAllText(directory + fileName.ToLower() + fileType);
-            T[] convertedData = JsonParser.FromJson<T>(jsonData);
+    //public static T[] ReadFile<T> (string directory, string fileName, string fileType)
+    //{
+    //    try
+    //    {
+    //        string jsonData = File.ReadAllText(directory + fileName.ToLower() + fileType);
+    //        T[] convertedData = JsonParser.FromJson<T>(jsonData);
 
-            return convertedData;
+    //        return convertedData;
 
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+    //    }
+    //    catch (Exception)
+    //    {
+    //        return null;
+    //    }
 
-    }
+    //}
 
     private IEnumerator LoadParameters()   //Load the card search parameters and their values 
     {
@@ -564,6 +564,25 @@ public static class SaveManagerExtensions
         catch (Exception ex)
         {
             throw new Exception(string.Format("Error writing to file: {0}. {1}", fullPath, ex.Message));
+        }
+    }
+    public static T TryReadFileToClass<T>(this T instance, string directory, string fileName, string fileType)
+    {
+        string fullPath = directory + fileName.ToLower() + fileType;
+
+        if (!File.Exists(fullPath))
+            return default;
+        
+        try
+        {
+            string jsonData = File.ReadAllText(fullPath);
+            instance = JsonParser.FromJson<T>(jsonData)[0];
+            return instance;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(string.Format("Error reading file: {0}. {1}", fullPath, ex.Message));
+            return default;
         }
     }
 

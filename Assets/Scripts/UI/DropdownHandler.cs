@@ -146,11 +146,11 @@ public class DropdownHandler : EUS.Cat_Systems.Singleton<DropdownHandler>
 
     string[] LoadParameterOptions(string fileName)
     {
-        DropdownParameterParse[] dropdownData = SaveManager.ReadFile<DropdownParameterParse>(SaveManager.parameterValuesDirectory, fileName, SaveManager.parameterValuesFileType);
+        DropdownParameterParse dropdownData = new DropdownParameterParse().TryReadFileToClass(SaveManager.parameterValuesDirectory, fileName, SaveManager.parameterValuesFileType);
 
         if (dropdownData != null)
         {
-            return dropdownData[0].options;
+            return dropdownData.options;
         }
         else
         {

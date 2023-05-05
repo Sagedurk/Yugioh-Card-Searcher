@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Experimental.AI;
 
 [Serializable]
 public class CardID_LUT
@@ -29,27 +28,24 @@ public class CardID_LUT
         return ID_LUTs;
     }
 
+    public static CardID_LUT TryGetLUT(int id)
+    {
+        if (!File.Exists(SaveManager.idLutDirectory + id.ToString() + SaveManager.idLutFileType))
+          return null;
+
+        CardID_LUT iD_LUT = new CardID_LUT().TryReadFileToClass(SaveManager.idLutDirectory, id.ToString(), SaveManager.idLutFileType);
+        return iD_LUT;
+    }
+
     public static void UpdateName(CardInfoParse card)
     {
         foreach (CardImageParse image in card.card_images)
         {
-            CardID_LUT iD_LUT = TryGetInstance(image.id);
+            CardID_LUT iD_LUT = TryGetLUT(image.id);
             
             if (iD_LUT != null)
                 iD_LUT.cardName = card.name;    
         }
-    }
-
-    public static CardID_LUT TryGetInstance(int id)
-    {
-        if (File.Exists(SaveManager.idLutDirectory + id + SaveManager.idLutFileType))
-        {
-            CardID_LUT[] loadedData = SaveManager.ReadFile<CardID_LUT>(SaveManager.idLutDirectory, id.ToString(), SaveManager.idLutFileType);
-
-            return loadedData[0];
-        }
-
-        return null;
     }
 
     public string GetName()
