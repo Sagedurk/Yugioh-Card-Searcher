@@ -438,7 +438,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
             else if (imageDataInstance == null)
                 imageDataInstance = ImageData.CreateImageData(cardImage.id);
-            
+    
 
             yield return TryDownloadImage(baseUrl + "cards/", ImageTypes.LARGE, imageDataInstance, overwriteData);
             imageDataInstance.SetImage(ImageTypes.LARGE, imageData);
@@ -450,7 +450,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             //imageDataInstance.SetImage(ImageTypes.CROPPED, imageData);
             
             //Save image data
-            imageDataInstance.SaveImages();
+            StartCoroutine(imageDataInstance.SaveImages());
         }
     }
 
@@ -481,7 +481,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
                 yield break;
         }
 
-        Debug.LogFormat("Try Download type {0}", imageType);
+
         UnityWebRequest imageDownload = UnityWebRequestTexture.GetTexture(url + instance.id.ToString() + ImageData.fileType);
         yield return imageDownload.SendWebRequest();
 
@@ -531,14 +531,45 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             cardInfo.ShowImageButtons();
     }
 
+    public IEnumerator UpdateImages()
+    {
+        UpdateData.Instance.updateProgressText.text = "0.00%";
+        UpdateData.Instance.BlockUIInteraction();
+
+        float percentageProgress = 0;
+
+        string[] imageFilePaths = Directory.GetFiles(SaveManager.imageDirectories[0]);
+
+        for (int i = 0; i < imageFilePaths.Length; i++)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(imageFilePaths[i]);
+
+            if (int.TryParse(fileName, out int imageID))
+            {
+                Debug.Log("Parse Successful: " + imageID);
+                ImageData imageData = ImageData.CreateImageData(imageID);
+
+                yield return StartCoroutine(TryDownloadImage(imageURL + "cards/", ImageTypes.LARGE, imageData, true));   
+                yield return StartCoroutine(TryDownloadImage(imageURL + "cards_small/", ImageTypes.SMALL, imageData, true));
+
+                yield return StartCoroutine(imageData.SaveImages(true));
+            }
+
+            percentageProgress = (float)i / imageFilePaths.Length * 100;
+
+            UpdateData.Instance.updateProgressText.text = percentageProgress.ToString("F2") + "%";
+        }
+        UpdateData.Instance.UnblockUIInteraction();
+    }
+
     #endregion
 
-    public IEnumerator FetchAllCards( )
+    public IEnumerator UpdateCards( )
     {
         webRequest = UnityWebRequest.Get(URL + endpointCard);
-        yield return StartCoroutine(AllCardRequest());
+        yield return StartCoroutine(CardUpdateRequest());
     }
-    public IEnumerator AllCardRequest()
+    private IEnumerator CardUpdateRequest()
     {
         UpdateData.Instance.updateProgressText.text = "0%";
         UpdateData.Instance.BlockUIInteraction();
@@ -551,14 +582,16 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
         CardInfoParse[] cardData = JsonParser.FromJson<CardInfoParse>(jsonData);
 
-        Debug.Log(cardData.Length + " cards in database");
-
+        List<CardInfoParse> updatedCards = new List<CardInfoParse>();
         float percentageProgress = 0;
         int cardsUpdated = 0;
 
+
         foreach (CardInfoParse card in cardData)
         {
-            if (CardID_LUT.TryGetLUT(card.id) == null)
+            string cardFileName = card.name.ConvertToValidFileName();
+
+            if (!File.Exists(SaveManager.cardDirectory + cardFileName + SaveManager.cardFileType))
             {
                 cardsUpdated++;
                 continue;
@@ -567,7 +600,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             Debug.Log("card Updated");
 
             SaveManager.SaveCard(card, true);
-            //yield return StartCoroutine(TryDownloadImages(imageURL, card));
+            updatedCards.Add(card);
+
             yield return new WaitForSeconds(0.0025f);
 
             percentageProgress = (float)cardsUpdated / cardData.Length * 100;
@@ -575,12 +609,50 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
             cardsUpdated++;
         }
+        UpdateData.Instance.UnblockUIInteraction();
+        CardID_LUT.UpdateLUTs(updatedCards);
+    }
+
+    public IEnumerator UpdateSearchData()
+    {
+        UpdateData.Instance.updateProgressText.text = "0%";
+        UpdateData.Instance.BlockUIInteraction();
+        int updateCounter = 0;
+
+        string[] files = Directory.GetFiles(SaveManager.parameterDirectory);
+
+        float percentageProgress = 0;
+
+        foreach (string file in files)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(file);
+            fileName = fileName.ConvertFromFileName();
+
+            webRequest = UnityWebRequest.Get(URL + endpointCard + fileName);
+            yield return StartCoroutine(SearchUpdateRequest(fileName));
+
+            updateCounter++;
+            percentageProgress = (float)updateCounter / files.Length * 100;
+            UpdateData.Instance.updateProgressText.text = percentageProgress.ToString("F0") + "%";
+            
+            //Due to a new API call happening each iteration,
+            //fastest rate allowed is 20 iterations per second
+            yield return new WaitForSeconds(0.066f);    //0.066 = 1/15
+        }
 
         UpdateData.Instance.UnblockUIInteraction();
     }
 
+    public IEnumerator SearchUpdateRequest(string fileName)
+    {
+        yield return webRequest.SendWebRequest();
+        yield return webRequest.downloadHandler.text;
 
+        webRequest.downloadHandler.text.WriteStringToFile(SaveManager.parameterDirectory, fileName, SaveManager.parameterFileType, true);
+        Debug.Log(webRequest.downloadHandler.text);
+    }
 
+    
 
     #region CardSets
     private IEnumerator CardSetRequest()

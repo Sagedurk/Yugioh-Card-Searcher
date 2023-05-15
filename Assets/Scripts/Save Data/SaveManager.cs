@@ -278,6 +278,41 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
 
     #endregion
 
+    #region IO
+
+    public static void DeleteFilesInDirectory(string directoryPath)
+    {
+        string[] filesToDelete = Directory.GetFiles(directoryPath);
+
+        foreach (string file in filesToDelete)
+        {
+            File.Delete(file);
+        }
+    }
+
+    public static void DeleteImages(CardInfoParse card)
+    {
+        foreach (CardImageParse image in card.card_images)
+        {
+            string imageID = image.id.ToString();
+
+            //loop through all image directories
+            for (int i = 0; i < SaveManager.imageDirectories.Length; i++)
+            {
+                string filePath = SaveManager.imageDirectories[i] + imageID + SaveManager.imageFileType;
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+            }
+        }
+    }
+
+
+    #endregion
+
+
     #endregion
 
     #region Loading

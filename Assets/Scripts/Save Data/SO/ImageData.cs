@@ -100,11 +100,13 @@ public class ImageData
         return hasAllImages;
     }
 
-    public void SaveImages()
+    public IEnumerator SaveImages(bool isOverwriting = false)
     {
-        imageLarge?.SaveImage(SaveManager.imageDirectories[0], id.ToString(), fileType);
-        imageSmall?.SaveImage(SaveManager.imageDirectories[1], id.ToString(), fileType);
-        imageCropped?.SaveImage(SaveManager.imageDirectories[2], id.ToString(), fileType);
+        imageLarge?.SaveImage(SaveManager.imageDirectories[0], id.ToString(), fileType, isOverwriting);
+        imageSmall?.SaveImage(SaveManager.imageDirectories[1], id.ToString(), fileType, isOverwriting);
+        imageCropped?.SaveImage(SaveManager.imageDirectories[2], id.ToString(), fileType, isOverwriting);
+        Debug.Log("Images saved!");
+        yield return null;
     }
 
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -12,7 +13,6 @@ public class UpdateData: EUS.Cat_Systems.Singleton<UpdateData>
     public CardInfo cardInfo;
     public Text result;
 
-    public SaveManager saveManager;
     public UnityWebRequest webRequest;
     public CardInfoParse[] parseList, toJson;
 
@@ -29,7 +29,7 @@ public class UpdateData: EUS.Cat_Systems.Singleton<UpdateData>
     public void UpdateAllCards()
     {
 
-        StartCoroutine(ApiCall.Instance.FetchAllCards());
+        StartCoroutine(ApiCall.Instance.UpdateCards());
     }
 
     public void UpdateArchetypes()
@@ -42,6 +42,18 @@ public class UpdateData: EUS.Cat_Systems.Singleton<UpdateData>
         StartCoroutine(ApiCall.Instance.UpdateCardSets());
     }
 
+    public void UpdateImages()
+    {
+        StartCoroutine(ApiCall.Instance.UpdateImages());
+    }
+
+    public void UpdateSearchData()
+    {
+        StartCoroutine(ApiCall.Instance.UpdateSearchData());
+    }
+
+
+
     public void BlockUIInteraction()
     {
         blockBackground.gameObject.SetActive(true);
@@ -52,83 +64,7 @@ public class UpdateData: EUS.Cat_Systems.Singleton<UpdateData>
     }
 
 
-
-
-
-
-    public IEnumerator APIrequest(bool resetButtons = true)
-    {
-        yield return webRequest.SendWebRequest();
-        if (webRequest.result == UnityWebRequest.Result.ConnectionError)
-        {
-            if (webRequest.downloadHandler.text.Contains("No card matching your query was found in the database."))
-            {
-                result.text = "No matching card was found.";
-            }
-            else if (webRequest.downloadHandler.text.Contains("\"error\":"))
-            {
-                result.text = "An error has occurred.";
-            }
-            else
-            {
-                StartCoroutine(LoadCardInfo(webRequest));
-            }
-        }
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="req"></param>
-    /// <returns></returns>
-    public IEnumerator LoadCardInfo(UnityWebRequest req = null)
-    {
-        string json;
-        
-        yield return req.downloadHandler.text;
-        json = "{ \"data\":" + req.downloadHandler.text + "}";
-        parseList = JsonParser.FromJson<CardInfoParse>(json);
-        
-
-        for (int i = 0; i < parseList.Length; i++)
-        {
-            SaveManager.CreateID_LUTs(parseList[i]);
-            parseList[i].TryWriteClassToFile(SaveManager.cardDirectory, parseList[i].name, SaveManager.cardFileType);
-
-            //Old Update!
-
-            ////JSON CONVERSION!
-            //toJson = new CardInfoParse[1];
-            //toJson[0] = parseList[i];
-            //jsonSaveData = JsonParser.ToJson<CardInfoParse>(toJson);
-            //jsonSaveData = jsonSaveData.Replace("{\"data\":", "");
-            //jsonSaveData = jsonSaveData.Replace(",\"archetype_name\":\"\"", "");
-            //if (!parseList[i].type.Contains("Pendulum"))
-            //{
-            //    jsonSaveData = jsonSaveData.Replace(",\"scale\":0", "");
-            //}
-            //if (!parseList[i].type.Contains("Link"))
-            //{
-            //    jsonSaveData = jsonSaveData.Replace(",\"linkval\":0", "");
-            //    jsonSaveData = jsonSaveData.Replace(",\"linkmarkers\":[]", "");
-            //}
-            //jsonSaveData = jsonSaveData.Substring(0, jsonSaveData.Length - 1);
-
-            //ApiCall.Instance.PrepToFileName(parseList[i].name);
-            //if (System.IO.File.Exists(Application.persistentDataPath + "/" + ApiCall.Instance.fileName.ToLower() + ".txt"))
-            //    saveManager.OverwriteStringFile(ApiCall.Instance.fileName, jsonSaveData);
-
-            //if(i == parseList.Length - 1)
-            //{
-            //    result.text = "Update done!";
-            //}
-
-
-
-        }
-    }
-
+    
 
 
 }

@@ -22,9 +22,10 @@ public class CardInfo : MonoBehaviour
     [SerializeField] RectTransform viewport;
     [SerializeField] RectTransform menuButtons;
 
-    [Header("Artwork Buttons")]
+    [Header("Image Buttons")]
     public Button previousImageButton;
     public Button nextImageButton;
+    public Button updateImagesButton;
 
     [Header("Card Set")]
     public RectTransform cardSetContainer;
@@ -128,6 +129,19 @@ public class CardInfo : MonoBehaviour
             previousImageButton.interactable = false;
     }
 
+    
+    public void UpdateCardImages()
+    {
+        SaveManager.DeleteImages(fetchedCards[0]);
+        StartCoroutine(SetImage(fetchedCards[0]));
+    }
+
+    private IEnumerator SetImage(CardInfoParse card)
+    {
+        yield return StartCoroutine(ApiCall.Instance.TryDownloadImages(ApiCall.imageURL, card));
+        ApiCall.Instance.LoadImage(card.card_images[imageIndex].id, image, ApiCall.ImageTypes.LARGE);
+    }
+
     #endregion
 
     #region Card Sets
@@ -170,6 +184,9 @@ public class CardInfo : MonoBehaviour
     {
         showCardSets.gameObject.SetActive(isShowing);
         showCardSets.interactable = isShowing;
+
+        //updateImagesButton.gameObject.SetActive(isShowing);
+        //updateImagesButton.interactable = isShowing;
     }
 
     public void ClearTextInfo(TextExtension[] textFields = null, bool resetImageIndex = false)
@@ -247,12 +264,9 @@ public class CardInfo : MonoBehaviour
 
     public IEnumerator ConvertData(CardInfoParse card)
     {
-       
         #region Set Image
         //if (ApiCall.Instance.loadType == LoadTypes.API)
-            yield return StartCoroutine(ApiCall.Instance.TryDownloadImages(ApiCall.imageURL, card));
-
-        ApiCall.Instance.LoadImage(card.card_images[imageIndex].id, image, ApiCall.ImageTypes.LARGE);
+        yield return StartCoroutine(SetImage(card));
         ShowImageButtons();
         #endregion
 

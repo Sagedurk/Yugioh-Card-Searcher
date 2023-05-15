@@ -472,7 +472,7 @@ public static class ExtensionMethods
     {
         string returnString = stringRef;
         returnString = returnString.CheckAndReplace(":", "_");
-        returnString = returnString.CheckAndReplace("/", "=");
+        returnString = returnString.CheckAndReplace("/", "!");
         returnString = returnString.CheckAndReplace("?", "ʔ");
         returnString = returnString.CheckAndReplace("%", "¤");
         returnString = returnString.CheckAndReplace("\"", "^");
@@ -480,11 +480,11 @@ public static class ExtensionMethods
         return returnString;
     }
 
-    public static string PrepFromFileName(this string stringRef)
+    public static string ConvertFromFileName(this string stringRef)
     {
         string returnString = stringRef;
         returnString.CheckAndReplace("_", ":");
-        returnString.CheckAndReplace("=", "/");
+        returnString.CheckAndReplace("!", "/");
         returnString.CheckAndReplace("ʔ", "?");
         returnString.CheckAndReplace("¤", "%");
         returnString.CheckAndReplace("^", "\"");

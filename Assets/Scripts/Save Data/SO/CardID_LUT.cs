@@ -37,6 +37,16 @@ public class CardID_LUT
         return iD_LUT;
     }
 
+    public static void UpdateLUTs(List<CardInfoParse> cards)
+    {
+        SaveManager.DeleteFilesInDirectory(SaveManager.idLutDirectory);
+
+        foreach (CardInfoParse card in cards)
+        {
+            TryCreateLUTs(card);
+        }
+    }
+
     public static void UpdateName(CardInfoParse card)
     {
         foreach (CardImageParse image in card.card_images)
