@@ -50,20 +50,6 @@ public class CardInfo : MonoBehaviour
         idInput = idInputField.textComponent;
     }
 
-    void FixedUpdate()
-    {
-        //disable errorText when it's empty, so it doesn't block any UI interaction
-        if (errorText != null) {
-            if (errorText.text == "" && errorText.enabled)
-            {
-                errorText.enabled = false;
-            }
-            else if (errorText.text != "" && !errorText.enabled)
-            {
-                errorText.enabled = true;
-            }
-        }
-    }
 
    
     //Add visual content here:

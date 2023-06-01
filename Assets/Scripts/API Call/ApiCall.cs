@@ -258,7 +258,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         {
 
             cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.id, cardInfo.cardName, cardInfo.cardType, cardInfo.monsterType, cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute, cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc }, resetButtons);
-            cardInfo.errorText.SetText("No matching card was found.");
+            ErrorManager.Instance.SetError("No matching card was found.");
+            //cardInfo.errorText.SetText("No matching card was found.");
 
             cardInfo.image.color = Color.clear;
             cardInfo.image.texture = null;
