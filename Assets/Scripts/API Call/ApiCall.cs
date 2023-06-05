@@ -92,6 +92,8 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         if (cardID == null)
             return;
 
+        ErrorManager.Instance.ClearError();
+
         switch (apiType)
         {
             case ApiTypes.CARD_INFO:
@@ -116,7 +118,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         }
     }
 
-    //TODO: Rename function to CardInfo
+
     private IEnumerator CardInfoExecute()
     {
         if (cardID == "")
@@ -128,14 +130,11 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         if (int.TryParse(cardID, out int id))
         {
             CardID_LUT id_LUT = CardID_LUT.TryGetLUT(id);
-            Debug.Log("LUT ATTEMPT");
 
             //Fetch card name from API if ID_LUT doesn't exist yet
             if (id_LUT == null)
             {
-                Debug.Log(URL + endpointCard + "id=" + cardID);
                 webRequest = UnityWebRequest.Get(URL + endpointCard + "id=" + cardID);
-
                 yield return StartCoroutine(APIRequestID());
             }
             else
@@ -158,7 +157,6 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             string loadedDataJson = JsonParser.ToJson(loadedData);
             SaveManager.Instance.fileData = loadedDataJson;
 
-            cardInfo.ClearTextInfo(cardInfo.errorText, true);
             StartCoroutine(LoadCardInfo()); 
         }
 
@@ -186,7 +184,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             CardSearchResultsCoroutine = null;
         }
 
-        cardSearch.ResetPrefab();
+        cardSearch.DestroySearchResults();
 
         if (fileContent != ""){
 
@@ -216,10 +214,10 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         yield return webRequest.SendWebRequest();
 
         if (webRequest.downloadHandler.text.Contains("No card matching your query was found in the database."))
-            OnApiNoDataFound(true);
+            OnApiNoDataFound();
 
         else if (webRequest.downloadHandler.text.Contains("\"error\":"))
-            OnApiError(true);
+            OnApiError();
 
             yield return webRequest.downloadHandler.text;
         string jsonData = webRequest.downloadHandler.text;
@@ -229,7 +227,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         cardName = cards[0].name;
     }
 
-    public IEnumerator APIRequest(bool resetButtons = true)
+    public IEnumerator APIRequest()
     {
         yield return webRequest.SendWebRequest();
 
@@ -240,47 +238,30 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
 
         #region API Responses
         if (webRequest.downloadHandler.text.Contains("No card matching your query was found in the database."))
-            OnApiNoDataFound(resetButtons);
+            OnApiNoDataFound();
 
         else if (webRequest.downloadHandler.text.Contains("\"error\":"))
-            OnApiError(resetButtons);
+            OnApiError();
 
         else
-            OnApiSuccess(resetButtons);
+            OnApiSuccess();
         #endregion
 
     }
     
     #region API Data Managing
-    void OnApiNoDataFound(bool resetButtons)
+    void OnApiNoDataFound()
     {
-        if(cardInfo!= null)
-        {
-
-            cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.id, cardInfo.cardName, cardInfo.cardType, cardInfo.monsterType, cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute, cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc }, resetButtons);
-            ErrorManager.Instance.SetError("No matching card was found.");
-            //cardInfo.errorText.SetText("No matching card was found.");
-
-            cardInfo.image.color = Color.clear;
-            cardInfo.image.texture = null;
-
-            cardInfo.showCardSets.interactable = false;
-            cardInfo.showCardSets.gameObject.SetActive(false);
-            cardInfo.HideImageButtons();
-        
-        }
+        ErrorManager.Instance.SetError("No matching card was found.");
     }
 
-    void OnApiError(bool resetButtons)
+    void OnApiError()
     {
-        cardInfo.ClearTextInfo(new TextExtension[] { cardInfo.id, cardInfo.cardName, cardInfo.cardType, cardInfo.monsterType, cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute, cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc }, resetButtons);
-        cardInfo.errorText.SetText("An error has occurred.");
+        ErrorManager.Instance.SetError("An API error has occurred.");
     }
 
-    void OnApiSuccess(bool resetButtons)
+    void OnApiSuccess()
     {
-        //Debug.Log("API Success!");
-
         loadType = LoadTypes.API;
 
        
@@ -288,9 +269,7 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
         switch (apiType)
         {
             case ApiTypes.CARD_INFO:
-                if (cardInfo.errorText != null)
-                    cardInfo.ClearTextInfo(cardInfo.errorText, resetButtons);
-
+                
                 StartCoroutine(LoadCardInfo());
                 break;
             case ApiTypes.CARD_SEARCH:
@@ -305,8 +284,6 @@ public class ApiCall : EUS.Cat_Systems.Singleton<ApiCall>
             default:
                 break;
         }
-
-
     }
 
     #endregion

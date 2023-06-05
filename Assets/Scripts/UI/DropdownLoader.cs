@@ -21,7 +21,7 @@ public class DropdownLoader : MonoBehaviour
 
     private void MarkPrimaryDropdownOptions()
     {
-        List<DropdownHandler.ParameterInstance>parameterInstances = DropdownHandler.Instance.parameterInstances;
+        List<DropdownHandler.ParameterInstance> parameterInstances = DropdownHandler.Instance.parameterInstances;
 
         int parameterValue = primaryDropdown.value;
 

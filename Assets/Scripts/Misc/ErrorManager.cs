@@ -13,9 +13,8 @@ public class ErrorManager : EUS.Cat_Systems.Singleton<ErrorManager>
 
     protected override void Awake()
     {
+        isDestroyable = false;
         base.Awake();
-        sceneType = ApiCall.Instance.apiType;
-
     }
 
     private void Start()
@@ -23,20 +22,24 @@ public class ErrorManager : EUS.Cat_Systems.Singleton<ErrorManager>
         SetErrorTextField();
     }
 
-    private void OnEnable()
+    protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
+        //Debug.Log("OVERRIDE SUCCESSFUL");
+        sceneType = ApiCall.Instance.apiType;
 
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
+        //return;
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
         SetErrorTextField();
 
+        //try
+        //{
+        //    throw new Exception("This is an exception for testing purposes.");
+        //}
+        //catch (Exception ex)
+        //{
+        //    Debug.Log("Caught");
+        //    LogExceptionToEndUser(ex);
+        //}
     }
 
     private void SetErrorTextField()
@@ -50,7 +53,7 @@ public class ErrorManager : EUS.Cat_Systems.Singleton<ErrorManager>
                 break;
             case ApiCall.ApiTypes.CARD_SEARCH:
 
-                //errorText = ApiCall.Instance.cardSearch.
+                errorText = ApiCall.Instance.cardSearch.errorText;
 
                 break;
             case ApiCall.ApiTypes.CARD_RANDOM:
@@ -62,17 +65,82 @@ public class ErrorManager : EUS.Cat_Systems.Singleton<ErrorManager>
      
     public void SetError(string errorMessage)
     {
+        ErrorPreparation();
+
         errorText.text = errorMessage;
         errorText.enabled = true;
     }
 
     public void ClearError()
     {
+        ClearErrorPreparation();
+
         errorText.text = "";
         errorText.enabled = false;
     }
 
 
+    private void ErrorPreparation()
+    {
+        switch (sceneType)
+        {
+            case ApiCall.ApiTypes.CARD_INFO:
+
+                ClearCardInfo(ApiCall.Instance.cardInfo);
+
+                break;
+
+            case ApiCall.ApiTypes.CARD_SEARCH:
+
+                ApiCall.Instance.cardSearch.DestroySearchResults();
+
+                break;
+
+            case ApiCall.ApiTypes.CARD_RANDOM:
+                
+                //ClearCardInfo(ApiCall.Instance.cardInfo);
+                
+                break;
+            
+            default:
+                break;
+        }
+    }
+
+    private void ClearErrorPreparation()
+    {
+
+        switch (sceneType)
+        {
+            case ApiCall.ApiTypes.CARD_INFO:
+
+                ApiCall.Instance.cardInfo.ResetImageIndex();
+
+                break;
+            case ApiCall.ApiTypes.CARD_SEARCH:
+
+                break;
+            case ApiCall.ApiTypes.CARD_RANDOM:
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void ClearCardInfo(CardInfo cardInfo)
+    {
+        cardInfo.ClearTextInfo(new TextExtension[] {
+                    cardInfo.id, cardInfo.cardName, cardInfo.cardType,cardInfo.monsterType,
+                    cardInfo.atk, cardInfo.def, cardInfo.level, cardInfo.attribute,
+                    cardInfo.pendulumScale, cardInfo.archetype, cardInfo.desc });
+
+        cardInfo.ResetImageIndex();
+
+        cardInfo.HideImageButtons();
+        cardInfo.HideImage();
+
+        cardInfo.ShowCardSetButton(false);
+    }
 
 
     public static void ThrowException(Exception exception)
@@ -82,7 +150,7 @@ public class ErrorManager : EUS.Cat_Systems.Singleton<ErrorManager>
     public static void LogException(Exception exception)
     {
 #if UNITY_EDITOR
-        Debug.LogError(exception.InnerException);
+        Debug.LogError(exception.Message + "\n\n" + exception.InnerException);
 #endif
     }
     public static void ThrowExceptionToEndUser(Exception exception)

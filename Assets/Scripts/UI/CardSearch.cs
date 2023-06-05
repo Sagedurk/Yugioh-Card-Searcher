@@ -15,6 +15,7 @@ public class CardSearch : MonoBehaviour
     public DropdownHandler dropDownMenu;
     [SerializeField] Button submitButton;
     [HideInInspector] public CardInfoParse[] fetchedCards;
+    public TextExtension errorText;
 
     private void Start()
     {
@@ -54,7 +55,7 @@ public class CardSearch : MonoBehaviour
     }
 
 
-    public void ResetPrefab()
+    public void DestroySearchResults()
     {
         EUS.Cat_Object_Manipulation.DestroyAll("PrefabSearch");
     }

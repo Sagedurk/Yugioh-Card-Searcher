@@ -4856,7 +4856,7 @@ MonoBehaviour:
   nextImageButton: {fileID: 1035964975}
   updateImagesButton: {fileID: 817101529}
   cardSetContainer: {fileID: 701780980}
-  showCardSets: {fileID: 1048964854}
+  cardSetButton: {fileID: 1048964854}
   cardSetCloseBtn: {fileID: 2142867112}
   amountOfPrints: {fileID: 715224133}
   idInputField: {fileID: 92956358}

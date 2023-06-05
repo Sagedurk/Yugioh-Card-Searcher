@@ -444,7 +444,7 @@ public class SaveManager : EUS.Cat_Systems.Singleton<SaveManager>
 
             if (fileContent != "")
             {
-                apiCall.cardSearch.ResetPrefab();
+                apiCall.cardSearch.DestroySearchResults();
                 apiCall.cardInfo.ClearTextInfo(apiCall.cardInfo.errorText);
 
                 apiCall.loadType = ApiCall.LoadTypes.FILE;

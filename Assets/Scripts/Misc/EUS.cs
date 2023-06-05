@@ -326,6 +326,22 @@ public static class EUS
             {
                 return _instance;
             }
+
+
+            protected void OnEnable()
+            {
+                SceneManager.sceneLoaded += OnSceneLoaded;
+            }
+
+            protected void OnDisable()
+            {
+                SceneManager.sceneLoaded -= OnSceneLoaded;
+            }
+
+            protected virtual void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+            {
+                
+            }
         }
 
     #if UNITY_EDITOR

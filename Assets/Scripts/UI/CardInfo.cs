@@ -28,8 +28,9 @@ public class CardInfo : MonoBehaviour
     public Button updateImagesButton;
 
     [Header("Card Set")]
+    [SerializeField] int amountOfSetsDisplayed = 20;
     public RectTransform cardSetContainer;
-    public Button  showCardSets, cardSetCloseBtn;
+    public Button  cardSetButton, cardSetCloseBtn;
     public TextExtension amountOfPrints;
 
 
@@ -115,6 +116,11 @@ public class CardInfo : MonoBehaviour
             previousImageButton.interactable = false;
     }
 
+    public void HideImage()
+    {
+        image.color = Color.clear;
+        image.texture = null;
+    }
     
     public void UpdateCardImages()
     {
@@ -140,7 +146,7 @@ public class CardInfo : MonoBehaviour
         prefab = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Card Set"), cardSetContainer.transform) as GameObject;
         RectTransform prefabTransform = prefab.GetComponent<RectTransform>();
 
-        prefabTransform.sizeDelta = new Vector2(0, viewport.rect.height / 20);   //Make 20 entries fit on screen at the same time (Make 1 entry 1/20 of the viewport height)
+        prefabTransform.sizeDelta = new Vector2(0, viewport.rect.height / amountOfSetsDisplayed);
         prefabTransform.anchoredPosition = new Vector2(0, -prefabTransform.sizeDelta.y * j);
         prefab.GetComponent<Text>().fontSize = ScaleHandler.fontSize;
         prefab.GetComponentInChildren<Text>().text = cardSetText;
@@ -156,6 +162,7 @@ public class CardInfo : MonoBehaviour
         }
     }
 
+
     #endregion
 
 
@@ -168,32 +175,26 @@ public class CardInfo : MonoBehaviour
 
     public void ShowCardSetButton(bool isShowing)
     {
-        showCardSets.gameObject.SetActive(isShowing);
-        showCardSets.interactable = isShowing;
+        cardSetButton.gameObject.SetActive(isShowing);
+        cardSetButton.interactable = isShowing;
 
         //updateImagesButton.gameObject.SetActive(isShowing);
         //updateImagesButton.interactable = isShowing;
     }
 
-    public void ClearTextInfo(TextExtension[] textFields = null, bool resetImageIndex = false)
+    public void ClearTextInfo(TextExtension[] textFields = null)
     {
         foreach (TextExtension text in textFields)
         {
             if (text != null)
                 text.SetText("");
         }
-
-        if (resetImageIndex)
-            ResetImageIndex();
     }
 
-    public void ClearTextInfo(TextExtension textField, bool ResetIndex = false)
+    public void ClearTextInfo(TextExtension textField)
     {
         if (textField != null)
             textField.SetText("");
-
-        if (ResetIndex)
-            ResetImageIndex();
     }
 
 
@@ -203,14 +204,15 @@ public class CardInfo : MonoBehaviour
 
     #region Convertions
 
-    void SetUniversalCardInfo(CardInfoParse card)
+    private void SetUniversalCardInfo(CardInfoParse card)
     {
         id.SetText("ID: " + card.id.ToString());
         cardName.SetText("Name: " + card.name);
         cardType.SetText("Card Type: " + card.type);
         desc.SetText("Desc:\n" + card.desc);
     }
-    void SetType(CardInfoParse card)
+
+    private void SetType(CardInfoParse card)
     {
         if (card.type == "Spell Card")
             monsterType.SetText("Spell Type: ", card.race);
@@ -271,8 +273,7 @@ public class CardInfo : MonoBehaviour
                 SpawnSets(card, j);
             }
 
-            Rect setSize = viewport.rect;
-            int amountOfSetsDisplayed = 20;
+            Rect setSize = viewport.rect; 
             Vector2 canvasSize = ScaleHandler.GetCanvasSize();
 
             cardSetContainer.SetSize(Directions2D.UP, card.card_sets.Length * setSize.height / amountOfSetsDisplayed);
